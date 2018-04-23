@@ -7,8 +7,6 @@ output: html_document
 
 ```{r setup, include=F}
 knitr::opts_chunk$set(echo = TRUE) # Something about loading stuff more quickly 
-
-setwd("~/Dropbox/PhD_data/MiP")
 library(tidyverse) # For data manipulation and visualization
 library(stargazer) # For output tables 
 library(plm) # For linear panel regression
@@ -18,22 +16,24 @@ library(maps) # Map data. May also be in tidyverse?
 library(mapdata) # More map data? 
 library(R.utils) # capitalizing? 
 library(MASS) # Boxcox? May also be in tidyverse? 
+theme_set(theme_minimal()) # Sets default theme, I think  
 ```
 
 ```{r Data import, include=F}
 #### Data ####
 # Data from Michael Barber's work on political polarization: 
 # https://doi.org/10.1086/683453
-Barber <- read_csv("~/Dropbox/PhD_data/MiP/data/Barber/Barber Limits Data.csv")
+Barber <- read_csv("~/Documents/GitHub/Money-in-Politics/data/Barber/Barber_Limits_Data.csv")
 # Getting 2008 only data (reasons for which will become clear in the next sections)
-Barber2008 <- Barber %>% filter(year==2008)
+# They didn't get clearer. 
+# Barber2008 <- Barber %>% filter(year==2008)
 
 # Data from ICC greasethewheels.org/cci/
 # Downloaded as .csv, imported as is. 
-convictions <- read_csv("~/Dropbox/PhD_data/MiP/data/ICS/CCI19762015.csv")
-perceptions <- read_csv("~/Dropbox/PhD_data/MiP/data/ICS/CPS20142016.csv")
+convictions <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CCI19762015.csv")
+perceptions <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CPS20142016.csv")
 #Doesn't havetime series data 
-reflections <- read_csv("~/Dropbox/PhD_data/MiP/data/ICS/CRI19772013.csv")
+reflections <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CRI19772013.csv")
 # Though I don't like the name reflections--it implies an unproven causal relationship. 
 
 #### Plotting Barber #### 
@@ -81,7 +81,8 @@ CCIandCRI <- grid.arrange(CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=2)
 ```
 
 ```{r govtrustgrid, include=F}
-govtrustgrid
+# What's this? Leftover from preivous plots, maybe 
+# govtrustgrid
 ```
 
 ```{r models, include=F}
@@ -221,3 +222,32 @@ ggplot(data=reflections, aes(CRI)) + geom_histogram()
 ggplot(reflections, aes(Year, CRI, group=Year)) + geom_boxplot()
 ```
 
+```{r plots and charts for poster, hopefully}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5, CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+  type="text", 
+  out="CCICRI.htm",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)",
+  notes = "I make this look good!")
+          )
+
+ind_limits_2010.histo <- ggplot() + geom_histogram(data=Barber, aes(ind_limits_2010), fill="#bf5700", binwidth = 5000) + theme_minimal() + labs(x = "Individual dollar limits", y= "Count of state-years")
+ind2pty_limits_2010.histo <- ggplot() + geom_histogram(data=Barber, aes(ind2pty_limits_2010), fill="#bf5700", binwidth = 5000) + theme_minimal() + labs(x = "Individual-to-party dollar limits", y="")
+pac_limits_2010.histo <- ggplot() + geom_histogram(data=Barber, aes(pac_limits_2010), fill="#bf5700", binwidth = 5000) + theme_minimal() + labs(x = "PAC dollar limits", y="")
+
+Barber.histos <- grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, nrow=1, bottom="Data from 1990-2012; 99999 indicates no limit", top="How Common Are Different Levels of State-Level Campaign Finance Limits?")
+
+CCI1<-ggplot() + geom_point(data=subset(BarberICC, ind_limits_2010 != 99999), aes(ind_limits_2010,CCI), col="#bf5700")  + labs(x = "Individual dollar limits", y= "Corruption Convictions Index")
+CCI2<-ggplot(data=subset(BarberICC, ind2pty_limits_2010 != 99999), aes(ind2pty_limits_2010,CCI)) + geom_point(col="#bf5700") + labs(x = "Individual-to-party dollar limits", y="")
+CCI3<-ggplot(data=subset(BarberICC, pac_limits_2010 != 99999), aes(pac_limits_2010,CCI)) + geom_point(col="#bf5700") + labs(x = "PAC dollar limits", y="")
+
+CRI1<-ggplot(data=subset(BarberICC, ind_limits_2010 != 99999), aes(ind_limits_2010,CRI)) + geom_point(col="#bf5700") + labs(x = "Individual dollar limits", y= "Corruption Reflections Index")
+CRI2<-ggplot(data=subset(BarberICC, ind2pty_limits_2010 != 99999), aes(ind2pty_limits_2010,CRI)) + geom_point(col="#bf5700") + labs(x = "Individual-to-party dollar limits", y="")
+CRI3<-ggplot(data=subset(BarberICC, pac_limits_2010 != 99999), aes(pac_limits_2010,CRI)) + geom_point(col="#bf5700") + labs(x = "PAC dollar limits", y="")
+CCIandCRI <- grid.arrange(CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=2)
+
+# All together now 
+grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=3)
+```
+
+grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=3, bottom="Data from 1990-2012; in the top three graphs, 99999 indicates a state-year with no limit in that category")
