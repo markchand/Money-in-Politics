@@ -247,7 +247,5 @@ CRI3<-ggplot(data=subset(BarberICC, pac_limits_2010 != 99999), aes(pac_limits_20
 CCIandCRI <- grid.arrange(CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=2)
 
 # All together now 
-grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=3)
-```
-
 grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=3, bottom="Data from 1990-2012; in the top three graphs, 99999 indicates a state-year with no limit in that category")
+```
