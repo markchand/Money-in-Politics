@@ -1,0 +1,251 @@
+---
+title: "MPI3"
+author: "Mark Hand"
+date: "12/12/2017"
+output: html_document
+---
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = TRUE) # Something about loading stuff more quickly 
+library(tidyverse) # For data manipulation and visualization
+library(stargazer) # For output tables 
+library(plm) # For linear panel regression
+library(car) # For logging the dependent variable; might be in tidyverse already 
+library(gridExtra) # For multi-plot outputs 
+library(maps) # Map data. May also be in tidyverse? 
+library(mapdata) # More map data? 
+library(R.utils) # capitalizing? 
+library(MASS) # Boxcox? May also be in tidyverse? 
+theme_set(theme_minimal()) # Sets default theme, I think  
+```
+
+```{r Data import, include=F}
+#### Data ####
+# Data from Michael Barber's work on political polarization: 
+# https://doi.org/10.1086/683453
+Barber <- read_csv("~/Documents/GitHub/Money-in-Politics/data/Barber/Barber_Limits_Data.csv")
+# Getting 2008 only data (reasons for which will become clear in the next sections)
+# They didn't get clearer. 
+# Barber2008 <- Barber %>% filter(year==2008)
+
+# Data from ICC greasethewheels.org/cci/
+# Downloaded as .csv, imported as is. 
+convictions <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CCI19762015.csv")
+perceptions <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CPS20142016.csv")
+#Doesn't havetime series data 
+reflections <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CRI19772013.csv")
+# Though I don't like the name reflections--it implies an unproven causal relationship. 
+
+#### Plotting Barber #### 
+ind_limits_2010.plot <- ggplot(Barber, aes(ind_limits_2010)) + geom_density() + theme_minimal()
+ind2pty_limits_2010.plot <- ggplot(Barber, aes(ind2pty_limits_2010)) + geom_density() + theme_minimal()
+pac_limits_2010.plot <- ggplot(Barber, aes(pac_limits_2010)) + geom_density() + theme_minimal()
+Barber.plots <- grid.arrange(ind_limits_2010.plot, ind2pty_limits_2010.plot, pac_limits_2010.plot, nrow=1)
+# ![](Barber.plots.png)
+```
+
+```{r wrangling, include=FALSE}
+#### Wrangling Barber and ICS ####
+corruption <- full_join(convictions, reflections)
+corruption <- corruption %>% 
+  rename("st"="State", "year"="Year")
+corruption$st <- state.abb[match(corruption$st,state.name)]
+BarberICC <- left_join(Barber, corruption)
+
+BarberICC <- BarberICC %>% 
+  mutate(
+    ind_limits_dummy = ifelse(ind_limits_2010==99999,0,1),
+    ind2pty_limits_dummy = ifelse(ind2pty_limits_2010==99999,0,1),
+    pac_limits_dummy = ifelse(pac_limits_2010==99999,0,1),
+    total_limits_dummy = ifelse(total_limits_2010==99999,0,1)
+  )
+
+#### Plotting ICS ####
+CRIdensity <- ggplot(BarberICC,aes(CRI)) + geom_density() + theme_minimal()
+CCIdensity <- ggplot(BarberICC,aes(CCI)) + geom_density() + theme_minimal()
+grid.arrange(CCIdensity, CRIdensity, nrow=1)
+```
+
+```{r ICS density plots, include=F=F}
+grid.arrange(CCIdensity, CRIdensity, nrow=1)
+```
+
+```{r corruption plots, include=F}
+CCI1<-ggplot(BarberICC,aes(ind_limits_2010,CCI)) + geom_point() + theme_minimal()
+CCI2<-ggplot(BarberICC,aes(ind2pty_limits_2010,CCI)) + geom_point() + theme_minimal()
+CCI3<-ggplot(BarberICC,aes(pac_limits_2010,CCI)) + geom_point() + theme_minimal()
+CRI1<-ggplot(BarberICC,aes(ind_limits_2010,CRI)) + geom_point() + theme_minimal()
+CRI2<-ggplot(BarberICC,aes(ind2pty_limits_2010,CRI)) + geom_point() + theme_minimal()
+CRI3<-ggplot(BarberICC,aes(pac_limits_2010,CRI)) + geom_point() + theme_minimal()
+CCIandCRI <- grid.arrange(CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=2)
+```
+
+```{r govtrustgrid, include=F}
+# What's this? Leftover from preivous plots, maybe 
+# govtrustgrid
+```
+
+```{r models, include=F}
+## Plotting 
+hist(BarberICC$CCI)
+hist(BarberICC$CRI)
+hist(BarberICC$ind_limits_2010[BarberICC$ind_limits_2010<99999])
+
+## Modeling 
+
+## CCI 
+# Individual limits and corruption
+CCIreg1  <- plm(CCI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CCIreg1)
+# No signifigance
+
+# Individual-to-party limits and corruption
+CCIreg2  <- plm(CCI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CCIreg2)
+# No Signifigance
+
+# PAC Limits and corruption
+CCIreg3  <- plm(CCI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CCIreg3)
+# No Signifigance
+
+# Total Limits and corruption
+CCIreg4  <- plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CCIreg4)
+# One star. Hmm...
+
+# Everybody? 
+CCIreg5 <- plm(CCI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
+
+## CRI
+CRIreg1  <- plm(CRI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CRIreg1)
+# No signifigance 
+
+# Individual-to-party limits and reflection
+CRIreg2  <- plm(CRI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CRIreg2)
+# One star. Hmm... 
+
+# PAC Limits and reflection
+CRIreg3  <- plm(CRI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CRIreg3)
+# No Signifigance
+
+# All Limits and reflection
+CRIreg4  <- plm(CRI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CRIreg4)
+# No Signifigance 
+
+# Everybody? 
+CRIreg5 <- plm(CRI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
+
+## CRI and CCI? 
+CRIonCCI <- plm(CRI ~ CCI,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CRIonCCI)
+CCIonCRI <- plm(CCI ~ CRI,data = BarberICC, index = c("st","year"), effect="twoways")
+summary(CCIonCRI)
+cor(BarberICC$CCI, BarberICC$CCI, method="pearson") # Why didn't this work? 
+ggplot(BarberICC, aes(CCI,CRI)) + geom_point(alpha=.1) + geom_smooth(method="lm", se=T)
+# How does one interpret these?? 
+
+```
+
+```{r stargazer, include=F}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
+  type="text", 
+  title = "Are campaign limits and corruption convictions correlated?",
+  out="CCI.htm",
+  dep.var.labels = c("Corruption Convictions Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)",
+  notes = "I make this look good!")
+          )
+
+stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+  type="text", 
+  title = "Are campaign limits and corruption reflections correlated?",
+  out="CRI.htm",
+  dep.var.labels = c("Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)",
+  notes = "I make this look good!")
+          )
+```
+
+```{r Sandbox, include=F}
+BarberICC %>% 
+  mutate(
+        CRI=replace(CRI, which(CRI==0), NA),
+        CCI=replace(CCI, which(CCI==0), NA)
+  ) -> test
+
+CCIreg1.2  <- plm(CCI ~ ind_limits_2010*ind_limits_dummy,data = test, index = c("st","year"), effect="twoways")
+summary(CCIreg1.2)
+#
+
+# Individual-to-party limits and reflection
+CCIreg2.2  <- plm(CCI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = test, index= c("st","year"), effect="twoways")
+summary(CCIreg2.2)
+# 
+
+# PAC Limits and reflection
+CCIreg3.2  <- plm(CCI ~ pac_limits_2010*pac_limits_dummy,data = test, index = c("st","year"), effect="twoways")
+summary(CCIreg3.2)
+# 
+
+# Double checking those dummy variables # 
+summary(plm(CCI ~ ind_limits_dummy + ind2pty_limits_dummy + pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways"))
+summary(plm(CRI ~ ind_limits_dummy + ind2pty_limits_dummy + pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways"))
+BarberICC %>% filter(ind_limits_dummy==1) -> Dummytest
+summary(plm(CCI ~ ind_limits_2010*ind_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways"))
+summary(plm(CCI ~ ind_limits_2010, data = Dummytest, index = c("st","year"), effect="twoways"))
+# Why in the world would these two be different? 
+
+# Did I do logs? 
+summary(plm(CCI ~ log(ind_limits_2010)*ind_limits_dummy + log(ind2pty_limits_2010)*ind2pty_limits_dummy + log(pac_limits_2010)*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways"))
+summary(plm(CRI ~ ind_limits_2010*ind_limits_dummy + log(ind2pty_limits_2010)*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways"))
+# No change in stars
+
+# Boxcox, maybe? 
+summary(boxcox(plm(CRI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways"),lambda=seq(0,1,by=.1)))
+summary(boxcox(plm(CCI ~ ind_limits_2010, data = Dummytest, index = c("st","year"), effect="twoways")))
+# Umm # 
+
+summary(reflections$CRI)
+reflections %>% 
+  summarize(
+    mean=mean(CRI),
+    sd=sd(CRI)) 
+ggplot(data=subset(reflections,State=="South Dakota"), aes(CRI)) + geom_histogram()
+ggplot(data=subset(reflections,State=="New York"), aes(CRI)) + geom_histogram()
+ggplot(data=subset(reflections,State=="South Dakota"), aes(Year, CRI)) + geom_line()
+ggplot(data=reflections, aes(CRI)) + geom_histogram()
+ggplot(reflections, aes(Year, CRI, group=Year)) + geom_boxplot()
+```
+
+```{r plots and charts for poster, hopefully}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5, CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+  type="text", 
+  out="CCICRI.htm",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)",
+  notes = "I make this look good!")
+          )
+
+ind_limits_2010.histo <- ggplot() + geom_histogram(data=Barber, aes(ind_limits_2010), fill="#bf5700", binwidth = 5000) + theme_minimal() + labs(x = "Individual dollar limits", y= "Count of state-years")
+ind2pty_limits_2010.histo <- ggplot() + geom_histogram(data=Barber, aes(ind2pty_limits_2010), fill="#bf5700", binwidth = 5000) + theme_minimal() + labs(x = "Individual-to-party dollar limits", y="")
+pac_limits_2010.histo <- ggplot() + geom_histogram(data=Barber, aes(pac_limits_2010), fill="#bf5700", binwidth = 5000) + theme_minimal() + labs(x = "PAC dollar limits", y="")
+
+Barber.histos <- grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, nrow=1, bottom="Data from 1990-2012; 99999 indicates no limit", top="How Common Are Different Levels of State-Level Campaign Finance Limits?")
+
+CCI1<-ggplot() + geom_point(data=subset(BarberICC, ind_limits_2010 != 99999), aes(ind_limits_2010,CCI), col="#bf5700")  + labs(x = "Individual dollar limits", y= "Corruption Convictions Index")
+CCI2<-ggplot(data=subset(BarberICC, ind2pty_limits_2010 != 99999), aes(ind2pty_limits_2010,CCI)) + geom_point(col="#bf5700") + labs(x = "Individual-to-party dollar limits", y="")
+CCI3<-ggplot(data=subset(BarberICC, pac_limits_2010 != 99999), aes(pac_limits_2010,CCI)) + geom_point(col="#bf5700") + labs(x = "PAC dollar limits", y="")
+
+CRI1<-ggplot(data=subset(BarberICC, ind_limits_2010 != 99999), aes(ind_limits_2010,CRI)) + geom_point(col="#bf5700") + labs(x = "Individual dollar limits", y= "Corruption Reflections Index")
+CRI2<-ggplot(data=subset(BarberICC, ind2pty_limits_2010 != 99999), aes(ind2pty_limits_2010,CRI)) + geom_point(col="#bf5700") + labs(x = "Individual-to-party dollar limits", y="")
+CRI3<-ggplot(data=subset(BarberICC, pac_limits_2010 != 99999), aes(pac_limits_2010,CRI)) + geom_point(col="#bf5700") + labs(x = "PAC dollar limits", y="")
+CCIandCRI <- grid.arrange(CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=2)
+
+# All together now 
+grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=3, bottom="Data from 1990-2012; in the top three graphs, 99999 indicates a state-year with no limit in that category")
+```
