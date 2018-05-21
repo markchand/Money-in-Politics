@@ -5,7 +5,7 @@ date: "12/12/2017"
 output: html_document
 ---
 
-```{r setup, include=F}
+```{r setup, include=F, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE) # Something about loading stuff more quickly 
 library(tidyverse) # For data manipulation and visualization
 library(stargazer) # For output tables 
@@ -19,7 +19,7 @@ library(MASS) # Boxcox? May also be in tidyverse?
 theme_set(theme_minimal()) # Sets default theme, I think  
 ```
 
-```{r Data import, include=F}
+```{r Data import, include=FALSE}
 #### Data ####
 # Data from Michael Barber's work on political polarization: 
 # https://doi.org/10.1086/683453
@@ -38,9 +38,12 @@ reflections <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CRI197720
 
 #### Plotting Barber #### 
 ind_limits_2010.plot <- ggplot(Barber, aes(ind_limits_2010)) + geom_density() + theme_minimal()
+ind_limits_2010.plot
 ind2pty_limits_2010.plot <- ggplot(Barber, aes(ind2pty_limits_2010)) + geom_density() + theme_minimal()
+ind_limits_2010.plot
 pac_limits_2010.plot <- ggplot(Barber, aes(pac_limits_2010)) + geom_density() + theme_minimal()
 Barber.plots <- grid.arrange(ind_limits_2010.plot, ind2pty_limits_2010.plot, pac_limits_2010.plot, nrow=1)
+pac_limits_2010.plot
 # ![](Barber.plots.png)
 ```
 
@@ -66,7 +69,7 @@ CCIdensity <- ggplot(BarberICC,aes(CCI)) + geom_density() + theme_minimal()
 grid.arrange(CCIdensity, CRIdensity, nrow=1)
 ```
 
-```{r ICS density plots, include=F=F}
+```{r ICS density plots, include=F}
 grid.arrange(CCIdensity, CRIdensity, nrow=1)
 ```
 
@@ -249,3 +252,9 @@ CCIandCRI <- grid.arrange(CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=2)
 # All together now 
 grid.arrange(ind_limits_2010.histo, ind2pty_limits_2010.histo, pac_limits_2010.histo, CCI1, CCI2, CCI3, CRI1,CRI2,CRI3, nrow=3, bottom="Data from 1990-2012; in the top three graphs, 99999 indicates a state-year with no limit in that category")
 ```
+
+```{r replication data maybe}
+library(haven)
+Campante <- read_dta("data/Replication/CampanteDo_MainData.dta")
+```
+

@@ -1,0 +1,96 @@
+---
+title: "MiP4"
+author: "Mark Hand"
+date: "5/21/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message=FALSE, warning=FALSE)
+library(haven) # import .dta
+library(tidyverse) # everything 
+library(plm) # For linear panel regression
+```
+
+```{r data import, include=FALSE}
+# Alt and Lassen's "Enforcement and Public Corruption: Evidence from US States"
+# http://epstein.wustl.edu/research/LPE.Alt.pdf
+AltLassen <- read_dta("data/Replication/AltLassenJLEO.dta")
+
+# Michael Barber's "Ideological Donors, Contribution Limits, and the Polarization of American Legislatures"  
+# https://doi.org/10.1086/683453
+Barber <- read_csv("~/Documents/GitHub/Money-in-Politics/data/Barber/Barber_Limits_Data.csv")
+
+# Data from ICC 
+# www.greasethewheels.org/cci/
+convictions <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CCI19762015.csv")
+reflections <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CRI19772013.csv")
+```
+
+```{r data wrangling}
+# Combining Barber and ICS 
+corruption <- full_join(convictions, reflections)
+corruption <- corruption %>% 
+  rename("st"="State", "year"="Year")
+corruption$st <- state.abb[match(corruption$st,state.name)]
+BarberICC <- left_join(Barber, corruption)
+
+BarberICC <- BarberICC %>% 
+  mutate(
+    ind_limits_dummy = ifelse(ind_limits_2010==99999,0,1),
+    ind2pty_limits_dummy = ifelse(ind2pty_limits_2010==99999,0,1),
+    pac_limits_dummy = ifelse(pac_limits_2010==99999,0,1),
+    total_limits_dummy = ifelse(total_limits_2010==99999,0,1)
+  )
+
+# Adding AltLassen
+table(AltLassen$state_name)
+AltLassen$state_name[AltLassen$state_name=="Californ"] = "California"
+AltLassen$state_name[AltLassen$state_name=="Connecti"] = "Connecticut"
+AltLassen$state_name[AltLassen$state_name=="Louisian"] = "Louisiana"
+AltLassen$state_name[AltLassen$state_name=="Massachu"] = "Massachusetts"
+AltLassen$state_name[AltLassen$state_name=="Minnesot"] = "Minnesota"
+AltLassen$state_name[AltLassen$state_name=="Mississi"] = "Mississippi"
+AltLassen$state_name[AltLassen$state_name=="NewHamps"] = "New Hampshire"
+AltLassen$state_name[AltLassen$state_name=="NewJerse"] = "New Jersey"
+AltLassen$state_name[AltLassen$state_name=="NewMexic"] = "New Mexico"
+AltLassen$state_name[AltLassen$state_name=="NewYork"] = "New York"
+AltLassen$state_name[AltLassen$state_name=="NorthCar"] = "North Carolina"
+AltLassen$state_name[AltLassen$state_name=="NorthDak"] = "North Dakota"
+AltLassen$state_name[AltLassen$state_name=="Pennsylv"] = "Pennsylvania"
+AltLassen$state_name[AltLassen$state_name=="RhodeIsl"] = "Rhode Island"
+AltLassen$state_name[AltLassen$state_name=="SouthCar"] = "South Carolina"
+AltLassen$state_name[AltLassen$state_name=="SouthDak"] = "South Dakota"
+AltLassen$state_name[AltLassen$state_name=="Tennesse"] = "Tennessee"
+AltLassen$state_name[AltLassen$state_name=="Washingt"] = "Washington"
+AltLassen$state_name[AltLassen$state_name=="WestVirg"] = "West Virginia"
+AltLassen$state_name[AltLassen$state_name=="Wisconsi"] = "Wisconsin"
+AltLassen$state_name <- state.abb[match(AltLassen$state_name,state.name)]
+table(AltLassen$state_name)
+AltLassen <- AltLassen %>% 
+  rename("st"="state_name")
+AltLassen$year <-as.integer(AltLassen$year)
+
+AltBarber <- inner_join(BarberICC, AltLassen)
+```
+
+```{r modeling, echo=FALSE}
+#Next: Panel model of corruption against unemployment and high school? 
+testmodel01 <- plm(CCI ~ rpcinc_annual_new + unemp + high_school + logNumpop + citi6006 + grelimp, data = AltBarber, index = c("st","year"), effect="twoways")
+summary(testmodel01)
+
+testmodel02 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + fedrepcons + urbanization_2 + logpop + inspop, data = AltBarber, index = c("st","year"), effect="twoways")
+summary(testmodel02)
+
+testmodel03 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + fedrepcons + urbanization_2 + logpop + inspop + ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = AltBarber, index = c("st","year"), effect="twoways")
+summary(testmodel03)
+
+testmodel05 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + urbanization_2 + logpop + inspop, data = AltBarber, index = c("st","year"), effect="twoways")
+summary(testmodel05)
+
+testmodel06 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + urbanization_2 + logpop + inspop + ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = AltBarber, index = c("st","year"), effect="twoways")
+summary(testmodel06)
+                 
+```
+
+
