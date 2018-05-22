@@ -12,7 +12,7 @@ library(tidyverse) # everything
 library(plm) # For linear panel regression
 ```
 
-```{r data import, include=FALSE}
+```{r data import, include=F}
 # Alt and Lassen's "Enforcement and Public Corruption: Evidence from US States"
 # http://epstein.wustl.edu/research/LPE.Alt.pdf
 AltLassen <- read_dta("data/Replication/AltLassenJLEO.dta")
@@ -27,7 +27,7 @@ convictions <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CCI197620
 reflections <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CRI19772013.csv")
 ```
 
-```{r data wrangling}
+```{r panel data wrangling, include=F}
 # Combining Barber and ICS 
 corruption <- full_join(convictions, reflections)
 corruption <- corruption %>% 
@@ -74,7 +74,7 @@ AltLassen$year <-as.integer(AltLassen$year)
 AltBarber <- inner_join(BarberICC, AltLassen)
 ```
 
-```{r modeling, echo=FALSE}
+```{r panel modeling, include=F}
 #Next: Panel model of corruption against unemployment and high school? 
 testmodel01 <- plm(CCI ~ rpcinc_annual_new + unemp + high_school + logNumpop + citi6006 + grelimp, data = AltBarber, index = c("st","year"), effect="twoways")
 summary(testmodel01)
@@ -91,6 +91,22 @@ summary(testmodel05)
 testmodel06 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + urbanization_2 + logpop + inspop + ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = AltBarber, index = c("st","year"), effect="twoways")
 summary(testmodel06)
                  
+```
+
+```{r DiD wrangling, include=F}
+# Creating DiD dataframe 
+AltBarberDiD <- transform(BarberICC, ind_limits_2010_d = ave(ind_limits_2010, st, FUN = function(x) c(NA, diff(x))))
+AltBarberDiD <- transform(AltBarberDiD, ind_limits_dummy_d = ave(ind_limits_dummy , st, FUN = function(x) c(NA, diff(x))))
+AltBarberDiD <- transform(AltBarberDiD, pac_limits_2010_d = ave(pac_limits_2010, st, FUN = function(x) c(NA, diff(x))))
+AltBarberDiD <- transform(AltBarberDiD, pac_limits_dummy_d = ave(pac_limits_dummy, st, FUN = function(x) c(NA, diff(x))))
+AltBarberDiD <- transform(AltBarberDiD, ind2pty_limits_2010_d = ave(ind2pty_limits_2010, st, FUN = function(x) c(NA, diff(x))))
+AltBarberDiD <- transform(AltBarberDiD, ind2pty_limits_dummy_d = ave(ind2pty_limits_dummy, st, FUN = function(x) c(NA, diff(x))))
+
+AltBarberDiD %>% select(1:2,8,11,3:7,12:21) -> DiDsmall 
+```
+
+```{r DiD modeling, include=F}
+
 ```
 
 
