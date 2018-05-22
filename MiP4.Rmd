@@ -5,14 +5,14 @@ date: "5/21/2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE, warning=FALSE}
+```{r setup}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message=FALSE, warning=FALSE)
 library(haven) # import .dta
 library(tidyverse) # everything 
 library(plm) # For linear panel regression
 ```
 
-```{r data import, include=F}
+```{r data import}
 # Alt and Lassen's "Enforcement and Public Corruption: Evidence from US States"
 # http://epstein.wustl.edu/research/LPE.Alt.pdf
 AltLassen <- read_dta("data/Replication/AltLassenJLEO.dta")
@@ -27,7 +27,7 @@ convictions <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CCI197620
 reflections <- read_csv("~/Documents/GitHub/Money-in-Politics/data/ICS/CRI19772013.csv")
 ```
 
-```{r panel data wrangling, include=F}
+```{r panel data wrangling}
 # Combining Barber and ICS 
 corruption <- full_join(convictions, reflections)
 corruption <- corruption %>% 
@@ -74,7 +74,7 @@ AltLassen$year <-as.integer(AltLassen$year)
 AltBarber <- inner_join(BarberICC, AltLassen)
 ```
 
-```{r panel modeling, include=F}
+```{r panel modeling}
 #Next: Panel model of corruption against unemployment and high school? 
 testmodel01 <- plm(CCI ~ rpcinc_annual_new + unemp + high_school + logNumpop + citi6006 + grelimp, data = AltBarber, index = c("st","year"), effect="twoways")
 summary(testmodel01)
@@ -93,20 +93,48 @@ summary(testmodel06)
                  
 ```
 
-```{r DiD wrangling, include=F}
-# Creating DiD dataframe 
-AltBarberDiD <- transform(BarberICC, ind_limits_2010_d = ave(ind_limits_2010, st, FUN = function(x) c(NA, diff(x))))
-AltBarberDiD <- transform(AltBarberDiD, ind_limits_dummy_d = ave(ind_limits_dummy , st, FUN = function(x) c(NA, diff(x))))
-AltBarberDiD <- transform(AltBarberDiD, pac_limits_2010_d = ave(pac_limits_2010, st, FUN = function(x) c(NA, diff(x))))
-AltBarberDiD <- transform(AltBarberDiD, pac_limits_dummy_d = ave(pac_limits_dummy, st, FUN = function(x) c(NA, diff(x))))
-AltBarberDiD <- transform(AltBarberDiD, ind2pty_limits_2010_d = ave(ind2pty_limits_2010, st, FUN = function(x) c(NA, diff(x))))
-AltBarberDiD <- transform(AltBarberDiD, ind2pty_limits_dummy_d = ave(ind2pty_limits_dummy, st, FUN = function(x) c(NA, diff(x))))
+```{r DiD wrangling}
+BarberICC %>% arrange(year) %>% group_by(st) %>% mutate(
+  ind_d = (ind_limits_2010 - dplyr::lag(ind_limits_2010)),
+  ind_dummy_d = (ind_limits_dummy - dplyr::lag(ind_limits_dummy)),
+  pac_d = (pac_limits_2010 - dplyr::lag(pac_limits_2010)),
+  pac_dummy_d = (pac_limits_dummy - dplyr::lag(pac_limits_dummy)),
+  ind2pty_d = (ind2pty_limits_2010 - dplyr::lag(ind2pty_limits_2010)),
+  ind2pty_dummy_d = (ind2pty_limits_dummy - dplyr::lag(ind2pty_limits_dummy))
+  ) -> testframe
 
-AltBarberDiD %>% select(1:2,8,11,3:7,12:21) -> DiDsmall 
+testframe %>% select(1:2,8,11,3:7,12:21) -> DiDsmall 
+summary(DiDsmall)
+
+# Now I have what I think are three multi-level categorical independent variables. 
+# https://stats.idre.ucla.edu/r/modules/coding-for-categorical-variables-in-regression-models/
+#1. When limits were imposed (1) or went down, did corruption go down? 
+#2. When limits were removed (-1) or went up, did corruption go up? 
+
+DiDsmall$ind_dummy_f <- factor(DiDsmall$ind_dummy_d)
+DiDsmall <- within(DiDsmall, ind_dummy_f <- relevel(ind_dummy_f, ref = "0"))
+DiDsmall$pac_dummy_f <- factor(DiDsmall$pac_dummy_d)
+DiDsmall <- within(DiDsmall, pac_dummy_f <- relevel(pac_dummy_f, ref = "0"))
+DiDsmall$ind2pty_dummy_f <- factor(DiDsmall$ind2pty_dummy_d)
+DiDsmall <- within(DiDsmall, ind2pty_dummy_f <- relevel(ind2pty_dummy_f, ref = "0"))
 ```
 
-```{r DiD modeling, include=F}
+```{r DiD modeling}
+summary(lm(CCI ~ ind_dummy_f, data = DiDsmall))
+summary(lm(CCI ~ pac_dummy_f, data = DiDsmall))
+summary(lm(CCI ~ ind2pty_dummy_f, data = DiDsmall))
+summary(lm(CRI ~ ind_dummy_f, data = DiDsmall))
+summary(lm(CRI ~ pac_dummy_f, data = DiDsmall))
+summary(lm(CRI ~ ind2pty_dummy_f, data = DiDsmall))
+# No effects 
 
+summary(lm(CCI ~ ind_dummy_f*ind_d, data = DiDsmall))
+summary(lm(CCI ~ pac_dummy_f*pac_d, data = DiDsmall))
+summary(lm(CCI ~ ind2pty_dummy_f*ind2pty_d, data = DiDsmall))
+summary(lm(CRI ~ ind_dummy_f*ind_d, data = DiDsmall))
+summary(lm(CRI ~ pac_dummy_f*pac_d, data = DiDsmall))
+summary(lm(CRI ~ ind2pty_dummy_f*ind2pty_d, data = DiDsmall))
+# No effects 
+
+# Next: Lag, write up. 
 ```
-
-
