@@ -1,8 +1,11 @@
 ---
-title: "MiP4"
-author: "Mark Hand"
+title: "| Do campaign contribution limits limit corruption? \n| Evidence from the
+  50 states\n"
+author: "Mark C. Hand"
 date: "5/21/2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup}
@@ -44,7 +47,7 @@ BarberICC <- BarberICC %>%
   )
 
 # Adding AltLassen
-table(AltLassen$state_name)
+# table(AltLassen$state_name)
 AltLassen$state_name[AltLassen$state_name=="Californ"] = "California"
 AltLassen$state_name[AltLassen$state_name=="Connecti"] = "Connecticut"
 AltLassen$state_name[AltLassen$state_name=="Louisian"] = "Louisiana"
@@ -66,7 +69,6 @@ AltLassen$state_name[AltLassen$state_name=="Washingt"] = "Washington"
 AltLassen$state_name[AltLassen$state_name=="WestVirg"] = "West Virginia"
 AltLassen$state_name[AltLassen$state_name=="Wisconsi"] = "Wisconsin"
 AltLassen$state_name <- state.abb[match(AltLassen$state_name,state.name)]
-table(AltLassen$state_name)
 AltLassen <- AltLassen %>% 
   rename("st"="state_name")
 AltLassen$year <-as.integer(AltLassen$year)
