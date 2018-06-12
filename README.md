@@ -8,8 +8,8 @@
 # /data 
 # Contains other authors' replication data used in this analysis. Data from Michael Barber and James Alt are masked in the GitHub repository, but available by email with permission from those authors. 
 
-# /current analysis 
-# R Project and Markdown files 
+# /paper 
+# Current analysis and draft paper 
 
 # Poster 
 # An early poster I should have put in its own folder; can't change the link now because the Internet won't follow. Still learning. 
