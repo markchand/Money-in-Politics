@@ -331,8 +331,7 @@ The results of the initial panel regression reveal no correlation between state-
 
 The first set of models (below) measures the association of various campaign contribution limits with the Corruption Convictions Index. The sign of each coefficient is negative, indicating that the presence of limits is associated with lower corruption levels, but that where limits exist, higher (weaker) donation limits are associated with lower levels of corruption. None of those results are significant at the p<0.05 level, however, meaning that we cannot claim their effect is statistically distinguishable from zero. I interpret these results as showing no relationship between the presence or amount of state-level contribution limits and levels of corruption as measured by the Corruption Convictions Index. 
 
-### INSERT FIGURE 1 HERE 
-```{r panel stargazer CCI}
+```{r stargzer CCI html}
 stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   type="text", 
   title = "Are campaign limits and corruption convictions correlated?",
@@ -340,27 +339,115 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   dep.var.labels = c("Corruption Convictions Index"),
   covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
 ```
+
+```{r stargazer CCI latex, results="asis", include=F}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
+  type="latex", 
+  title = "Are campaign limits and corruption convictions correlated?",
+  dep.var.labels = c("Corruption Convictions Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
+```
+
+\begin{table}[!htbp] \centering 
+  \caption{Are campaign limits and corruption convictions correlated?} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lcccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{4}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-5} 
+\\[-1.8ex] & \multicolumn{4}{c}{Corruption Convictions Index} \\ 
+\\[-1.8ex] & (1) & (2) & (3) & (4)\\ 
+\hline \\[-1.8ex] 
+ Individual limit amounts & $-$0.00004 &  &  & $-$0.00003 \\ 
+  & (0.00005) &  &  & (0.0001) \\ 
+  & & & & \\ 
+ Individual limits (dummy) & $-$4.021 &  &  & $-$2.989 \\ 
+  & (4.572) &  &  & (5.076) \\ 
+  & & & & \\ 
+ Individual-to-party limit amount &  & $-$0.00000 &  & 0.00000 \\ 
+  &  & (0.00001) &  & (0.00001) \\ 
+  & & & & \\ 
+ Individual-to-party limits (dummy) &  & $-$0.019 &  & 0.363 \\ 
+  &  & (0.626) &  & (0.684) \\ 
+  & & & & \\ 
+ PAC limit amounts &  &  & $-$0.00002 & $-$0.00002 \\ 
+  &  &  & (0.00002) & (0.00002) \\ 
+  & & & & \\ 
+ PAC limits (dummy) &  &  & $-$1.762 & $-$1.339 \\ 
+  &  &  & (1.519) & (1.743) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 1,149 & 1,149 & 1,149 & 1,149 \\ 
+R$^{2}$ & 0.002 & 0.00002 & 0.002 & 0.002 \\ 
+Adjusted R$^{2}$ & $-$0.066 & $-$0.068 & $-$0.066 & $-$0.069 \\ 
+F Statistic & 0.826 (df = 2; 1075) & 0.012 (df = 2; 1075) & 0.843 (df = 2; 1075) & 0.426 (df = 6; 1071) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 
+
 The second set of models (below) also fails to find a relationship between state-level campaign contribution limits and media mentions of corruption as measured by the Corruption Reflections Index, with one exception: The presence of limits on what an individual can give to a party is associated with a 0.087 point decline in the Corruption Reflection Index. The Corruption Reflections Index operates on a scale of zero to one (with a few outlying exceptions), meaning that the presence of individual-to-party limits is associated with an 8.7% point decrease in the index. 
 
-### INSERT FIGURE 2 HERE 
-```{r stargazer CRI}
+```{r stargazer CRI html}
 stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   type="text", 
   title = "Are campaign limits and corruption reflections correlated?",
   out="collateral/CRI.htm",
   dep.var.labels = c("Corruption Reflections Index"),
   covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
-
-# stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5, CRIreg1, CRIreg2, CRIreg3, CRIreg5,
-#   type="text", 
-#   out="collateral/CCICRI.htm",
-#   dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
-#   covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
 ```
+
+```{r stargazer CRI latex, results="asis", include=F}
+stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+  title = "Are campaign limits and corruption reflections correlated?",
+  dep.var.labels = c("Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
+```
+
+\begin{table}[!htbp] \centering 
+  \caption{Are campaign limits and corruption reflections correlated?} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lcccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{4}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-5} 
+\\[-1.8ex] & \multicolumn{4}{c}{Corruption Reflections Index} \\ 
+\\[-1.8ex] & (1) & (2) & (3) & (4)\\ 
+\hline \\[-1.8ex] 
+ Individual limit amounts & $-$0.00000 &  &  & $-$0.00000 \\ 
+  & (0.00000) &  &  & (0.00000) \\ 
+  & & & & \\ 
+ Individual limits (dummy) & $-$0.316 &  &  & $-$0.328 \\ 
+  & (0.257) &  &  & (0.284) \\ 
+  & & & & \\ 
+ Individual-to-party limit amount &  & $-$0.00000 &  & $-$0.00000 \\ 
+  &  & (0.00000) &  & (0.00000) \\ 
+  & & & & \\ 
+ Individual-to-party limits (dummy) &  & $-$0.087$^{**}$ &  & $-$0.099$^{***}$ \\ 
+  &  & (0.035) &  & (0.038) \\ 
+  & & & & \\ 
+ PAC limit amounts &  &  & 0.00000 & 0.00000 \\ 
+  &  &  & (0.00000) & (0.00000) \\ 
+  & & & & \\ 
+ PAC limits (dummy) &  &  & 0.009 & 0.096 \\ 
+  &  &  & (0.085) & (0.098) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 1,150 & 1,150 & 1,150 & 1,150 \\ 
+R$^{2}$ & 0.002 & 0.007 & 0.0001 & 0.010 \\ 
+Adjusted R$^{2}$ & $-$0.066 & $-$0.060 & $-$0.068 & $-$0.061 \\ 
+F Statistic & 0.842 (df = 2; 1076) & 3.937$^{**}$ (df = 2; 1076) & 0.037 (df = 2; 1076) & 1.858$^{*}$ (df = 6; 1072) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 
 
 The third set of models incorporates a number of control variables in order to isolate the effect of campaign finance laws on corruption arrest levels. As in the models above, the only correlation significant at the p<0.05 level is the presence of limits on what an individual can give to a party; again, the presence of limits in what an individual can give to a party is associated with a decline in the Corruption Reflections Index. 
 
-### INSERT FIGURE 3 HERE 
 ```{r stargazer controlled panel}
 stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   type="text", 
@@ -369,6 +456,94 @@ stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)")
   )
 ```
+
+```{r stargazer controlled panel latex, results="asis", include=F}
+stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income (thousands)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (thousands)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)")
+  )
+```
+
+Too big to include? 
+
+\begin{table}[!htbp] \centering 
+  \caption{} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lcccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{4}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-5} 
+\\[-1.8ex] & \multicolumn{2}{c}{Corruption Convictions Index} & \multicolumn{2}{c}{Corruption Reflections Index} \\ 
+\\[-1.8ex] & (1) & (2) & (3) & (4)\\ 
+\hline \\[-1.8ex] 
+ Divided government & $-$0.371$^{*}$ & $-$0.332 & 0.012 & 0.014 \\ 
+  & (0.208) & (0.211) & (0.014) & (0.014) \\ 
+  & & & & \\ 
+ Binding one-term limit & 0.228 & $-$0.294 & 0.056 & 0.112 \\ 
+  & (1.399) & (1.494) & (0.093) & (0.098) \\ 
+  & & & & \\ 
+  Binding two-term limit & 0.013 & 0.048 & 0.002 & $-$0.0004 \\ 
+  & (0.232) & (0.234) & (0.015) & (0.015) \\ 
+  & & & & \\ 
+ Real per capita income (thousands) & $-$0.001$^{**}$ & $-$0.001$^{**}$ & 0.00001 & 0.00001 \\ 
+  & (0.0002) & (0.0002) & (0.00002) & (0.00002) \\ 
+  & & & & \\ 
+ AUSAs per million population & 0.064 & 0.077 & 0.0003 & $-$0.001 \\ 
+  & (0.060) & (0.061) & (0.004) & (0.004) \\ 
+  & & & & \\ 
+ Unemployment & 0.007 & 0.029 & 0.015 & 0.013 \\ 
+  & (0.155) & (0.161) & (0.010) & (0.011) \\ 
+  & & & & \\ 
+ Citizen ideology measure & $-$0.001 & 0.001 & $-$0.001 & $-$0.001 \\ 
+  & (0.020) & (0.021) & (0.001) & (0.001) \\ 
+  & & & & \\ 
+ Percent high school graduates & $-$2.187 & $-$1.955 & $-$0.707 & $-$0.901$^{*}$ \\ 
+  & (7.236) & (7.455) & (0.477) & (0.488) \\ 
+  & & & & \\ 
+ Real per capita gov revenues (thousands) & 0.002 & 0.002$^{*}$ & 0.0002$^{**}$ & 0.0002$^{***}$ \\ 
+  & (0.001) & (0.001) & (0.0001) & (0.0001) \\ 
+  & & & & \\ 
+ Inequality: Male wages & 0.131$^{***}$ & 0.125$^{***}$ & $-$0.004 & $-$0.003 \\ 
+  & (0.048) & (0.048) & (0.003) & (0.003) \\ 
+  & & & & \\ 
+ Relative government wages & 32.384 & 28.128 & 4.163 & 7.262$^{**}$ \\ 
+  & (45.126) & (47.558) & (2.984) & (3.123) \\ 
+  & & & & \\ 
+ Urbanization & 0.074 & 0.073 & $-$0.013$^{*}$ & $-$0.016$^{**}$ \\ 
+  & (0.114) & (0.115) & (0.007) & (0.008) \\ 
+  & & & & \\ 
+ Log of population (millions) & 3.883 & 2.988 & 0.098 & 0.018 \\ 
+  & (3.032) & (3.231) & (0.200) & (0.212) \\ 
+  & & & & \\ 
+ Individual limit amounts &  & 0.0001 &  & $-$0.00001 \\ 
+  &  & (0.0001) &  & (0.00001) \\ 
+  & & & & \\ 
+ Individual limits (dummy) &  & 8.012 &  & $-$0.561 \\ 
+  &  & (8.409) &  & (0.550) \\ 
+  & & & & \\ 
+ Individual-to-party limit amount &  & 0.00000 &  & 0.00000 \\ 
+  &  & (0.00001) &  & (0.00000) \\ 
+  & & & & \\ 
+ Individual-to-party limits (dummy) &  & 0.260 &  & $-$0.111$^{**}$ \\ 
+  &  & (0.744) &  & (0.049) \\ 
+  & & & & \\ 
+ PAC limit amounts &  & $-$0.00002 &  & $-$0.00000 \\ 
+  &  & (0.00004) &  & (0.00000) \\ 
+  & & & & \\ 
+ PAC limits (dummy) &  & $-$1.547 &  & $-$0.192 \\ 
+  &  & (3.176) &  & (0.209) \\ 
+  & & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 671 & 671 & 672 & 672 \\ 
+R$^{2}$ & 0.038 & 0.043 & 0.029 & 0.047 \\ 
+Adjusted R$^{2}$ & $-$0.080 & $-$0.084 & $-$0.090 & $-$0.080 \\ 
+F Statistic & 1.818$^{**}$ (df = 13; 597) & 1.413 (df = 19; 591) & 1.368 (df = 13; 598) & 1.549$^{*}$ (df = 19; 592) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{4}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 
 
 ### Modeling changes in campaign limits and corruption arrests 
 
@@ -386,6 +561,87 @@ stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
                      "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"))
 
 ```
+
+```{r stargazer DiD latex, results="asis", include=F}
+stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
+  title = "Do changes in limits lead to lower levels of corruption?",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
+                     "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
+                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"))
+
+```
+
+\begin{table}[!htbp] \centering 
+  \caption{Do changes in limits lead to lower levels of corruption?} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lcccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{6}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-7} 
+\\[-1.8ex] & \multicolumn{3}{c}{Corruption Convictions Index} & \multicolumn{3}{c}{Corruption Reflections Index} \\ 
+\\[-1.8ex] & (1) & (2) & (3) & (4) & (5) & (6)\\ 
+\hline \\[-1.8ex] 
+ Individual limits removed & 27.590 &  &  & $-$3.567 &  &  \\ 
+  & (117.102) &  &  & (7.717) &  &  \\ 
+  & & & & & & \\ 
+ Individual limits imposed & 4.038 &  &  & 1.324 &  &  \\ 
+  & (25.993) &  &  & (1.713) &  &  \\ 
+  & & & & & & \\ 
+ Individual limit amount & 0.00001 &  &  & 0.00001 &  &  \\ 
+  & (0.0001) &  &  & (0.00001) &  &  \\ 
+  & & & & & & \\ 
+ Individual limits removed*amount & $-$0.0003 &  &  & 0.00003 &  &  \\ 
+  & (0.001) &  &  & (0.0001) &  &  \\ 
+  & & & & & & \\ 
+ Individual limits imposed*amount & 0.00004 &  &  & 0.00000 &  &  \\ 
+  & (0.0003) &  &  & (0.00002) &  &  \\ 
+  & & & & & & \\ 
+ PAC limits removed &  & $-$4.699 &  &  & $-$1.586 &  \\ 
+  &  & (42.691) &  &  & (2.815) &  \\ 
+  & & & & & & \\ 
+ PAC limits imposed &  & $-$0.977 &  &  & 0.129 &  \\ 
+  &  & (2.786) &  &  & (0.184) &  \\ 
+  & & & & & & \\ 
+ PAC limit amount &  & $-$0.00001 &  &  & $-$0.00000 &  \\ 
+  &  & (0.0001) &  &  & (0.00000) &  \\ 
+  & & & & & & \\ 
+ PAC limits removed*amount &  & 0.0001 &  &  & 0.00002 &  \\ 
+  &  & (0.0004) &  &  & (0.00003) &  \\ 
+  & & & & & & \\ 
+ PAC limits imposed*amount &  & 0.00000 &  &  & 0.00000 &  \\ 
+  &  & (0.0001) &  &  & (0.00001) &  \\ 
+  & & & & & & \\ 
+ Individual-to-party limits removed &  &  & $-$1.944 &  &  & 0.044 \\ 
+  &  &  & (3.317) &  &  & (0.219) \\ 
+  & & & & & & \\ 
+ Individual-to-party limits imposed &  &  & $-$0.252 &  &  & 0.010 \\ 
+  &  &  & (1.133) &  &  & (0.075) \\ 
+  & & & & & & \\ 
+ Individual-to-party limit amount &  &  & $-$0.00001 &  &  & $-$0.00000 \\ 
+  &  &  & (0.00002) &  &  & (0.00000) \\ 
+  & & & & & & \\ 
+ Individual-to-party limits removed*amount &  &  &  &  &  &  \\ 
+  &  &  &  &  &  &  \\ 
+  & & & & & & \\ 
+ Individual-to-party limits imposed*amount &  &  & 0.00000 &  &  & 0.00000 \\ 
+  &  &  & (0.00002) &  &  & (0.00000) \\ 
+  & & & & & & \\ 
+ Constant & 3.198$^{***}$ & 3.196$^{***}$ & 3.184$^{***}$ & 0.291$^{***}$ & 0.291$^{***}$ & 0.291$^{***}$ \\ 
+  & (0.090) & (0.090) & (0.089) & (0.006) & (0.006) & (0.006) \\ 
+  & & & & & & \\ 
+\hline \\[-1.8ex] 
+Observations & 1,099 & 1,099 & 1,099 & 1,100 & 1,100 & 1,100 \\ 
+R$^{2}$ & 0.001 & 0.001 & 0.003 & 0.003 & 0.002 & 0.001 \\ 
+Adjusted R$^{2}$ & $-$0.004 & $-$0.004 & $-$0.001 & $-$0.001 & $-$0.003 & $-$0.003 \\ 
+Residual Std. Error & 2.939 (df = 1093) & 2.939 (df = 1093) & 2.935 (df = 1094) & 0.194 (df = 1094) & 0.194 (df = 1094) & 0.194 (df = 1095) \\ 
+F Statistic & 0.172 (df = 5; 1093) & 0.111 (df = 5; 1093) & 0.691 (df = 4; 1094) & 0.706 (df = 5; 1094) & 0.413 (df = 5; 1094) & 0.217 (df = 4; 1095) \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{6}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
+\end{table} 
 
 ##Discussion
 How might we interpret these results? The relationship between campaign finance laws and the Corruption Convictions Index is most clear: None of these methods reveal any correlation between state level campaign finance laws and levels of corruption as measured by corruptions convictions, even controlling for variation in enforcement across the states. 
