@@ -13,4 +13,7 @@ Formula
 plm
 stargazer
 texreg
+kableExtra
+broom
+knitr
 bindrcpp
