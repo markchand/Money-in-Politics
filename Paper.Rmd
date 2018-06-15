@@ -5,6 +5,10 @@ title: |
 author: "Mark Hand"
 date: "5/23/2018"
 output: pdf_document
+header-includes:
+- \usepackage{pdflscape}
+- \newcommand{\blandscape}{\begin{landscape}}
+- \newcommand{\elandscape}{\end{landscape}}
 ---
 
 Since the 1970s, the U.S. Supreme Court has frustrated efforts at campaign finance reform by maintaining that nearly all limits on political spending violate the first amendment’s protection of free speech. The Court makes only two exceptions: The state has a compelling enough interesting in preventing “corruption of the appearance of corruption” to limit political donations. But do campaign finance laws actually prevent corruption or its appearance? Using state-level data from 1990-2012 on contribution limits, corruption arrests, and media mentions of corruption, this paper employs a linear panel regression and a difference-in-differences analysis to test whether campaign contribution limits are associated with lower levels of corruption convictions or media mentions of corruption. These methods find no relationship between the presence or level of campaign finance laws and quid pro quo corruption, suggesting that would-be reformers must keep looking for evidence to support their efforts. As current challenges to contribution limits wind their way through federal courts, the answer to this question will inform the Supreme Court’s decision to uphold or strike down remaining limits on political campaign contributions. 
@@ -348,9 +352,13 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   type="latex", 
   title = "Are campaign limits and corruption convictions correlated?",
   dep.var.labels = c("Corruption Convictions Index"),
-  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  font.size = "small",
+  header=FALSE,
+  column.sep.width = "-15pt",
+  digits = 2, digits.extra = 2)
 ```
-
+\newpage
 The second set of models (below) also fails to find a relationship between state-level campaign contribution limits and media mentions of corruption as measured by the Corruption Reflections Index, with one exception: The presence of limits on what an individual can give to a party is associated with a 0.087 point decline in the Corruption Reflection Index. The Corruption Reflections Index operates on a scale of zero to one (with a few outlying exceptions), meaning that the presence of individual-to-party limits is associated with an 8.7% point decrease in the index. 
 
 ```{r stargazer CRI html}
@@ -366,10 +374,16 @@ stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
 stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   title = "Are campaign limits and corruption reflections correlated?",
   dep.var.labels = c("Corruption Reflections Index"),
-  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  font.size = "small",
+  header=FALSE,
+  column.sep.width = "-15pt",
+  digits = 2, digits.extra = 2)
 ```
 
+
 The third set of models incorporates a number of control variables in order to isolate the effect of campaign finance laws on corruption arrest levels. As in the models above, the only correlation significant at the p<0.05 level is the presence of limits on what an individual can give to a party; again, the presence of limits in what an individual can give to a party is associated with a decline in the Corruption Reflections Index. 
+\newpage
 
 ```{r stargazer controlled panel}
 stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
@@ -381,12 +395,16 @@ stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   )
 ```
 
-```{r stargazer controlled panel latex, results="asis", eval=TRUE}
+```{r 3 stargazer controlled panel latex, results="asis", eval=TRUE}
 stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   title = "Are campaign limits and correlated with corruption convictions or reflections?",
   dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
-  covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income (thousands)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (thousands)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)")
-  )
+  covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income (thousands)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (thousands)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  font.size = "small",
+  header=FALSE,
+  column.sep.width = "-15pt",
+  no.space = T,
+  digits = 2, digits.extra = 2)
 ```
 
 ### Modeling changes in campaign limits and corruption arrests 
@@ -405,15 +423,23 @@ stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
 
 ```
 
+\newpage
+\blandscape
 ```{r stargazer DiD latex, results="asis", eval=TRUE}
 stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
   title = "Do changes in limits lead to lower levels of corruption?",
   dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
   covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
                      "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
-                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"))
+                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"),
+  font.size = "small", 
+  header = FALSE,
+  column.sep.width = "-15pt",
+  digits = 2, digits.extra = 2,
+  no.space = TRUE)
 
 ```
+\elandscape
 
 ##Discussion
 How might we interpret these results? The relationship between campaign finance laws and the Corruption Convictions Index is most clear: None of these methods reveal any correlation between state level campaign finance laws and levels of corruption as measured by corruptions convictions, even controlling for variation in enforcement across the states. 
