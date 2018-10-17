@@ -89,6 +89,17 @@ AltLassen$year <-as.integer(AltLassen$year)
 AltBarber <- inner_join(BarberICC, AltLassen)
 ```
 
+```{r panel effects mmodeling, eval=T}
+# Maybe helpful https://onlinecourses.science.psu.edu/stat502/node/162/
+# Erin's suggestion https://www.princeton.edu/~otorres/Panel101R.pdf 
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways"))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="within"))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="random")) #FAIL 
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model="pooling")
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model="within")
+```
+
 ```{r panel modeling, eval=T}
 ## CCI 
 # Individual limits and corruption
