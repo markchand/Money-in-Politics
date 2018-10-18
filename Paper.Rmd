@@ -94,6 +94,7 @@ AltBarber <- inner_join(BarberICC, AltLassen)
 # Erin's suggestion https://www.princeton.edu/~otorres/Panel101R.pdf 
 summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC))
 summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways"))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="within", effect="twoways"))
 summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="within"))
 summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="random")) #FAIL 
 summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model="pooling")
