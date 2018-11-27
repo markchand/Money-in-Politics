@@ -90,7 +90,7 @@ AltLassen$year <-as.integer(AltLassen$year)
 AltBarber <- inner_join(BarberICC, AltLassen)
 ```
 
-```{r panel effects modeling, eval=F}
+```{r new panel effects modeling, eval=F}
 # Maybe helpful? https://onlinecourses.science.psu.edu/stat502/node/162/
 # Erin's suggestion https://www.princeton.edu/~otorres/Panel101R.pdf
 # On robust standard errors https://stats.stackexchange.com/questions/117052/replicating-statas-robust-option-in-r
