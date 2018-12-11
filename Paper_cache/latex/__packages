@@ -17,3 +17,5 @@ kableExtra
 broom
 knitr
 bindrcpp
+skimr
+summarytools
