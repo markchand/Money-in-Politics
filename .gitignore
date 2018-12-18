@@ -3,7 +3,9 @@
 .RData
 .Ruserdata
 /data/Barber/Barber_Limits_Data.csv
-/collateral
+/collateral/*
+!/collateral/CCI.htm
+!/collateral/CRI.htm
 /data/Replication
 /data/ 
 /data/Replication/AltLassenJLEO.dta

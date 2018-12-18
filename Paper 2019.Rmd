@@ -601,8 +601,9 @@ stargazer(cri.base.pooled,
           dep.var.labels = "Corruption Convictions Index",
           covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
           add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way"))
-          )
+          ) 
 ```
+
 ### Model II: Difference-in-Difference Model
 <!--Add specification, formulas?-->
 Even if the panel models above fail to capture correlation between state level campaign finance laws and corruption arrests, it could be the case that changes in campaign finance laws, rather than relative campaign finance limits, are correlated with decreases in corruption. A difference-in-difference regression can help identify this by comparing the state-years in which campaign finance laws changed to state-years where they remained constant. If tighter campaign finance laws are correlated with lower corruption levels, then a change in one year should lead to lower corruption convictions in the years following. 
@@ -766,7 +767,7 @@ Welch, W. P. (1982). Campaign contributions and legislative voting: Milk money a
 Zall, B. (2017, October 24). Ninth Circuit Tees Up Latest Challenge to Citizens United and McCutcheon. Retrieved November 22, 2017, from https://publicpolicylegal.com/2017/10/24/ninth-circuit-tees-up-latest-challenge-to-citizens-united-and-mccutcheon/
 
 <!-- Old code
-```{r panel modeling, eval=F}
+```{r panel modeling}
 ## CCI 
 # Individual limits and corruption
 CCIreg1  <- plm(CCI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
@@ -807,7 +808,7 @@ CRIreg4  <- plm(CRI ~ total_limits_2010*total_limits_dummy,data = BarberICC, ind
 CRIreg5 <- plm(CRI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
 ```
 
-```{r (old) controlled panel modeling, eval=F}
+```{r (old) controlled panel modeling}
 #Next: Panel model of corruption against unemployment and high school? 
 testmodel01 <- plm(CCI ~ rpcinc_annual_new + unemp + high_school + logNumpop + citi6006 + grelimp, data = AltBarber, index = c("st","year"), effect="twoways")
 
@@ -818,7 +819,7 @@ testmodel03 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpci
 testmodel05 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + urbanization_2 + logpop + inspop, data = AltBarber, index = c("st","year"), effect="twoways")
 ```
 
-```{r controlled panel modeling, eval=F}
+```{r controlled panel modeling}
 
 CCIcontrol01 <- plm(CCI ~ jdiv  # Divided government 
                    + bindingonetermlimit # Binding one-term limit 
@@ -896,7 +897,7 @@ CRIcontrol02 <- plm(CRI ~ jdiv  # Divided government
                  
 ```
 
-```{r post-Lentz panel effects modeling 1, eval=F}
+```{r post-Lentz panel effects modeling 1}
 # Include lagged dependent variables here. 
 # Erin's question: Are these "pooled"? 
 # Her effort to understand: Write out the formulas. 
@@ -932,7 +933,7 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
 ```
 
-```{r stargazer CCI latex, results="asis", eval=TRUE}
+```{r stargazer CCI latex, results="asis"}
 stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   type="latex", 
   title = "Are campaign limits and corruption convictions correlated?",
@@ -953,7 +954,7 @@ stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
 ```
 
-```{r stargazer CRI latex, results="asis", eval=TRUE}
+```{r stargazer CRI latex, results="asis"}
 stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
           type="latex",
   title = "Are campaign limits and corruption reflections correlated?",
@@ -965,7 +966,7 @@ stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   digits = 2, digits.extra = 2)
 ```
 
-```{r stargazer controlled panel, eval=F}
+```{r stargazer controlled panel}
 stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   type="text", 
   title = "Are campaign limits and correlated with corruption convictions or reflections?",
@@ -975,7 +976,7 @@ stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   )
 ```
 
-```{r 3 stargazer controlled panel latex, results="asis", eval=TRUE}
+```{r 3 stargazer controlled panel latex, results="asis"}
 stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   title = "Are campaign limits and correlated with corruption convictions or reflections?",
   dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
@@ -1000,7 +1001,7 @@ stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
 ```
 
 \blandscape
-```{r stargazer DiD latex, results="asis", eval=TRUE}
+```{r stargazer DiD latex, results="asis"}
 stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
   title = "Do changes in limits lead to lower levels of corruption?",
   dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
