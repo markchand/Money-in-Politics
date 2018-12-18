@@ -201,88 +201,9 @@ $Reflections = \alpha + \beta_{indiv.dummy} + \beta_{indiv.dummy}*\beta_{indiv.l
 
 As demonstrated below, this model fails to uncover any initial correlation between changes in campaign finance law and CCI or CRI scores. This may be due to the confounding effect of absent variables. In order to test that, I build a model of political corruption using control variables previously demonstrated to be correlated with corruption arrests, resulting in a data set covering 1990-2004, the period of overlap among the data sets listed above. These include controlling for the size and education levels of the population, the ideology of a population, income levels and inequality, education levels, the number and relative income of government employees, and urbanization. Building a model of corruption that includes variables previously demonstrated to be correlated with corruption levels, then adding in campaign finance data, can better identify the association of campaign finance laws with corruption levels.
 
-```{r panel modeling, eval=T}
-## CCI 
-# Individual limits and corruption
-CCIreg1  <- plm(CCI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No signifigance
-
-# Individual-to-party limits and corruption
-CCIreg2  <- plm(CCI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance
-
-# PAC Limits and corruption
-CCIreg3  <- plm(CCI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance
-
-# Total Limits and corruption
-CCIreg4  <- plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# One star. Hmm...
-
-# Everybody? 
-CCIreg5 <- plm(CCI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
-
-## CRI
-CRIreg1  <- plm(CRI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No signifigance 
-
-# Individual-to-party limits and reflection
-CRIreg2  <- plm(CRI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# One star. Hmm... 
-
-# PAC Limits and reflection
-CRIreg3  <- plm(CRI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance
-
-# All Limits and reflection
-CRIreg4  <- plm(CRI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance 
-
-# Everybody? 
-CRIreg5 <- plm(CRI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
-```
-
-```{r post-Lentz panel effects modeling, eval=F}
-# Include lagged dependent variables here. 
-# Erin's question: Are these "pooled"? 
-# Her effort to understand: Write out the formulas. 
-# Maybe helpful? https://onlinecourses.science.psu.edu/stat502/node/162/
-# Erin's suggestion https://www.princeton.edu/~otorres/Panel101R.pdf
-# On robust standard errors https://stats.stackexchange.com/questions/117052/replicating-statas-robust-option-in-r
-# And https://cran.r-project.org/web/packages/sandwich/vignettes/sandwich.pdf
-# And https://www.brodrigues.co/blog/2018-07-08-rob_stderr/, 
-# Pretty good explanation here https://www.methodsconsultants.com/tutorial/introduction-to-random-effects-models-including-hlm/
-# Go through this? https://github.com/tyleransom/EconometricsLabs/blob/master/tidyRcheatsheet.pdf
-summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC))
-summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways"))
-summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="within", effect="twoways"))
-summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="within"))
-summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="random")) #FAIL 
-summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model="pooling")
-summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model="within")
-
-#From Erin: 
-# •	Based on the results in Table 3, it appears that neither fixed effects or random effects were included in the panel estimation results. If that is correct, I’d argue including one of them could materially change the results. 
-# o	I’m not sure which would be better: state fixed effects would limit the interpretation of results to effects within states, as opposed to across states but fixed effects are not a good idea when the error terms of each state are correlated (use a Hausman to check). Random effects assume no omitted variables, which can be a strong assumption.  
-# o	This might be a useful resource: https://www.princeton.edu/~otorres/Panel101.pdf
-# o	Explain your treatment of standard errors (e.g., are you using robust se?).
-
-```
-
-```{r (old) controlled panel modeling}
-#Next: Panel model of corruption against unemployment and high school? 
-testmodel01 <- plm(CCI ~ rpcinc_annual_new + unemp + high_school + logNumpop + citi6006 + grelimp, data = AltBarber, index = c("st","year"), effect="twoways")
-
-testmodel02 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + fedrepcons + urbanization_2 + logpop + inspop, data = AltBarber, index = c("st","year"), effect="twoways")
-
-testmodel03 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + fedrepcons + urbanization_2 + logpop + inspop + ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = AltBarber, index = c("st","year"), effect="twoways")
-
-testmodel05 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + urbanization_2 + logpop + inspop, data = AltBarber, index = c("st","year"), effect="twoways")
-```
-
-```{r controlled panel modeling, eval=T}
-
-CCIcontrol01 <- plm(CCI ~ jdiv  # Divided government 
+```{r modeling of CCI base model effects, eval=F}
+# Base model with no fixed or random effects 
+ cci.base.pooled <- plm(CCI ~ jdiv  # Divided government 
                    + bindingonetermlimit # Binding one-term limit 
                    + bindingtwotermlimit # Binding two-term limit 
                    + rpcinc_annual_new # Real per capita income ($1000)
@@ -296,30 +217,10 @@ CCIcontrol01 <- plm(CCI ~ jdiv  # Divided government
                    + urbanization_2 # Urbanization 
                    + logpop, # Log of population (millions)
                    data = AltBarber, 
-                   index = c("st","year"), 
-                   effect="twoways")
+                   model="pooling")
 
-CCIcontrol02 <- plm(CCI ~ jdiv  # Divided government 
-                   + bindingonetermlimit # Binding one-term limit 
-                   + bindingtwotermlimit # Binding two-term limit 
-                   + rpcinc_annual_new # Real per capita income ($1000)
-                   + eopop # AUSAs per million population
-                   + unemp # Unemployment 
-                   + citi6006 # Citizen ideology measure 
-                   + high_school + # Percent high school graduates
-                   + rgenrevpc # Real per capita gov revenues ($1000)
-                   + men_ineqincwag # Inequality: Male wages
-                   + grelimp # Relative government wages
-                   + urbanization_2 # Urbanization 
-                   + logpop # Log of population (millions)
-                   + ind_limits_2010*ind_limits_dummy 
-                   + ind2pty_limits_2010*ind2pty_limits_dummy 
-                   + pac_limits_2010*pac_limits_dummy, 
-                   data = AltBarber, 
-                   index = c("st","year"), 
-                   effect="twoways")
-
-CRIcontrol01 <- plm(CRI ~ jdiv  # Divided government 
+# Base model with fixed effects (NB: effect="individual" is redundant here)
+cci.base.fixed <- plm(CCI ~ jdiv  # Divided government 
                    + bindingonetermlimit # Binding one-term limit 
                    + bindingtwotermlimit # Binding two-term limit 
                    + rpcinc_annual_new # Real per capita income ($1000)
@@ -333,10 +234,10 @@ CRIcontrol01 <- plm(CRI ~ jdiv  # Divided government
                    + urbanization_2 # Urbanization 
                    + logpop, # Log of population (millions)
                    data = AltBarber, 
-                   index = c("st","year"), 
-                   effect="twoways")
+                   model="within")
 
-CRIcontrol02 <- plm(CRI ~ jdiv  # Divided government 
+# Base model with random effects 
+cci.base.random <- plm(CCI ~ jdiv  # Divided government 
                    + bindingonetermlimit # Binding one-term limit 
                    + bindingtwotermlimit # Binding two-term limit 
                    + rpcinc_annual_new # Real per capita income ($1000)
@@ -348,14 +249,336 @@ CRIcontrol02 <- plm(CRI ~ jdiv  # Divided government
                    + men_ineqincwag # Inequality: Male wages
                    + grelimp # Relative government wages
                    + urbanization_2 # Urbanization 
-                   + logpop # Log of population (millions)
-                   + ind_limits_2010*ind_limits_dummy 
-                   + ind2pty_limits_2010*ind2pty_limits_dummy 
-                   + pac_limits_2010*pac_limits_dummy, 
+                   + logpop, # Log of population (millions)
                    data = AltBarber, 
-                   index = c("st","year"), 
-                   effect="twoways")
-                 
+                   model="random")
+
+#Base model with fixed effects and time fixed effects 
+cci.base.fixed.time <- plm(CCI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within", 
+                   effect = "twoways")
+
+# Base model with random effects doesn't work: 
+# Error in solve.default(crossprod(ZBmu)) : 
+  # system is computationally singular: reciprocal condition number = 1.96767e-18
+
+# Hausman for base model 
+phtest(cci.base.pooled, cci.base.fixed, cci.base.random, cci.base.fixed.time)
+```
+
+```{r output of CCI base model effects, eval=F}
+stargazer(cci.base.pooled, 
+          cci.base.fixed, 
+          cci.base.random, 
+          cci.base.fixed.time, 
+          type="text",
+          add.lines = list(c("Effects", "Pooled", "Fixed", "Random", "Two-Way"))
+          )
+```
+
+```{r modeling of CRI base model effects, eval=F}
+# Base model with no fixed or random effects 
+ cri.base.pooled <- plm(CRI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="pooling")
+
+# Base model with fixed effects (NB: effect="individual" is redundant here)
+cri.base.fixed <- plm(CRI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within")
+
+# Base model with random effects 
+cri.base.random <- plm(CRI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="random")
+
+#Base model with fixed effects and time fixed effects 
+cri.base.fixed.time <- plm(CRI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within", 
+                   effect = "twoways")
+
+# Hausman for base model 
+phtest(cri.base.pooled, cri.base.fixed, cri.base.random, cri.base.fixed.time)
+```
+
+```{r output of CRI base model effects, eval=F}
+stargazer(cri.base.pooled, 
+          cri.base.fixed, 
+          cri.base.random, 
+          cri.base.fixed.time, 
+          type="text",
+          add.lines = list(c("Effects", "Pooled", "Fixed", "Random", "Two-Way"))
+          )
+```
+
+```{r modeling of CCI with campaign finance variables, eval=F}
+# Base model with no fixed or random effects 
+ cci.limits.pooled <- plm(CCI 
+                   ~ ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy
+                   + jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="pooling")
+
+# Base model with fixed effects (NB: effect="individual" is redundant here)
+cci.limits.fixed <- plm(CCI 
+                   ~ ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy
+                   + jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within")
+
+# Base model with random effects (failed)  
+# cci.limits.random <- plm(CCI 
+#                    ~ ind_limits_2010*ind_limits_dummy 
+#                    + ind2pty_limits_2010*ind2pty_limits_dummy 
+#                    + pac_limits_2010*pac_limits_dummy
+#                    + jdiv  # Divided government 
+#                    + bindingonetermlimit # Binding one-term limit 
+#                    + bindingtwotermlimit # Binding two-term limit 
+#                    + rpcinc_annual_new # Real per capita income ($1000)
+#                    + eopop # AUSAs per million population
+#                    + unemp # Unemployment 
+#                    + citi6006 # Citizen ideology measure 
+#                    + high_school + # Percent high school graduates
+#                    + rgenrevpc # Real per capita gov revenues ($1000)
+#                    + men_ineqincwag # Inequality: Male wages
+#                    + grelimp # Relative government wages
+#                    + urbanization_2 # Urbanization 
+#                    + logpop, # Log of population (millions)
+#                    data = AltBarber, 
+#                    model="random")
+
+#Base model with fixed effects and time fixed effects 
+cci.limits.fixed.time <- plm(CCI 
+                   ~ ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy
+                   + jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within", 
+                   effect = "twoways")
+
+# Hausman for base model 
+phtest(cci.limits.pooled, cci.limits.fixed, cci.limits.random, cci.limits.fixed.time)
+```
+
+```{r output of CCI with campaign finance variables, eval=F}
+stargazer(cci.limits.pooled, 
+          cci.limits.fixed, 
+          cci.limits.fixed.time, 
+          type="text",
+          add.lines = list(c("Effects", "Pooled", "Fixed", "Two-Way"))
+          )
+```
+
+```{r modeling of CRI with campaign finance variables, eval=F}
+# Base model with no fixed or random effects 
+cri.limits.pooled <- plm(CRI 
+                   ~ ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy
+                   + jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="pooling")
+
+# Base model with fixed effects (NB: effect="individual" is redundant here)
+cri.limits.fixed <- plm(CRI 
+                   ~ ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy
+                   + jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within")
+
+# Base model with random effects (failed)  
+cri.limits.random <- plm(CRI
+                   ~ ind_limits_2010*ind_limits_dummy
+                   + ind2pty_limits_2010*ind2pty_limits_dummy
+                   + pac_limits_2010*pac_limits_dummy
+                   + jdiv  # Divided government
+                   + bindingonetermlimit # Binding one-term limit
+                   + bindingtwotermlimit # Binding two-term limit
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment
+                   + citi6006 # Citizen ideology measure
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization
+                   + logpop, # Log of population (millions)
+                   data = AltBarber,
+                   model="random")
+
+#Base model with fixed effects and time fixed effects 
+cri.limits.fixed.time <- plm(CRI 
+                   ~ ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy
+                   + jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within", 
+                   effect = "twoways")
+
+# Base model with random effects doesn't work: 
+# Error in solve.default(crossprod(ZBmu)) : 
+  # system is computationally singular: reciprocal condition number = 1.96767e-18
+
+# Hausman for base model 
+phtest(cri.limits.pooled, cri.limits.fixed, cri.limits.random, cri.limits.fixed.time)
+```
+
+```{r output of CRI with campaign finance variables, eval=F}
+stargazer(cri.limits.pooled, 
+          cri.limits.fixed, 
+          cri.limits.random,
+          cri.limits.fixed.time, 
+          type="text",
+          add.lines = list(c("Effects", "Pooled", "Fixed", "Random", "Two-Way"))
+          )
+```
+
+
+```{r output to table?}
+
 ```
 
 ### Model II: Difference-in-Difference Model
@@ -423,9 +646,9 @@ CRIDID03 <- lm(CRI ~ ind2pty_dummy_f*ind2pty_d, data = DiDsmall)
 ### Modeling campaign limits and corruption arrests 
 The results of the initial panel regressions reveal no correlation between state-level campaign contribution limits and corruption, with one exception: There is a statistically significant relationship between the presence of individual-to-party limits and the Corruption Reflections Index. 
 
-The first set of models (Table I) measures the association of various campaign contribution limits with the Corruption Convictions Index. The sign of each coefficient is negative, indicating that the presence of limits is associated with lower corruption levels, but that where limits exist, higher (weaker) donation limits are associated with lower levels of corruption. None of those results are significant at the p<0.05 level, however, meaning that we cannot claim their effect is statistically distinguishable from zero. I interpret these results as showing no relationship between the presence or amount of state-level contribution limits and levels of corruption as measured by the Corruption Convictions Index. 
+The first set of models (Table 1) measures the association of various campaign contribution limits with the Corruption Convictions Index. The sign of each coefficient is negative, indicating that the presence of limits is associated with lower corruption levels, but that where limits exist, higher (weaker) donation limits are associated with lower levels of corruption. None of those results are significant at the p<0.05 level, however, meaning that we cannot claim their effect is statistically distinguishable from zero. I interpret these results as showing no relationship between the presence or amount of state-level contribution limits and levels of corruption as measured by the Corruption Convictions Index. 
 
-The second set of models (Table II) also fails to find a relationship between state-level campaign contribution limits and media mentions of corruption as measured by the Corruption Reflections Index, with one exception: The presence of limits on what an individual can give to a party is associated with a 0.10 point decline in the Corruption Reflection Index. The Corruption Reflections Index operates on a scale of zero to one (with a few outlying exceptions), indicating that the presence of individual-to-party limits is associated with a 10% decrease in the index. 
+The second set of models (Table 2) also fails to find a relationship between state-level campaign contribution limits and media mentions of corruption as measured by the Corruption Reflections Index, with one exception: The presence of limits on what an individual can give to a party is associated with a 0.10 point decline in the Corruption Reflection Index. The Corruption Reflections Index operates on a scale of zero to one (with a few outlying exceptions), indicating that the presence of individual-to-party limits is associated with a 10% decrease in the index. 
 
 The third set of models (Table 3) incorporates a number of control variables in order to isolate the effect of campaign finance laws on corruption arrest levels. As in the models above, the only correlation significant at the p<0.05 level is the presence of limits on what an individual can give to a party. As above, the presence of limits in what an individual can give to a party is associated with a decline in the Corruption Reflections Index. 
 
@@ -455,7 +678,7 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   digits = 2, digits.extra = 2)
 ```
 
-```{r stargazer CRI html}
+```{r stargazer CRI html, eval=F}
 stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   type="text", 
   title = "Are campaign limits and corruption reflections correlated?",
@@ -476,7 +699,7 @@ stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   digits = 2, digits.extra = 2)
 ```
 
-```{r stargazer controlled panel}
+```{r stargazer controlled panel, eval=F}
 stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
   type="text", 
   title = "Are campaign limits and correlated with corruption convictions or reflections?",
@@ -614,3 +837,162 @@ Werner, Timothy, and John J. Coleman. 2014. "Citizens United, independent expend
 Welch, W. P. (1982). Campaign contributions and legislative voting: Milk money and dairy price supports. Western Political Quarterly, 35(4), 478-495.
 
 Zall, B. (2017, October 24). Ninth Circuit Tees Up Latest Challenge to Citizens United and McCutcheon. Retrieved November 22, 2017, from https://publicpolicylegal.com/2017/10/24/ninth-circuit-tees-up-latest-challenge-to-citizens-united-and-mccutcheon/
+
+<!-- Old code
+```{r panel modeling, eval=F}
+## CCI 
+# Individual limits and corruption
+CCIreg1  <- plm(CCI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No signifigance
+
+# Individual-to-party limits and corruption
+CCIreg2  <- plm(CCI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance
+
+# PAC Limits and corruption
+CCIreg3  <- plm(CCI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance
+
+# Total Limits and corruption
+CCIreg4  <- plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# One star. Hmm...
+
+# Everybody? 
+CCIreg5 <- plm(CCI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
+
+## CRI
+CRIreg1  <- plm(CRI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No signifigance 
+
+# Individual-to-party limits and reflection
+CRIreg2  <- plm(CRI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# One star. Hmm... 
+
+# PAC Limits and reflection
+CRIreg3  <- plm(CRI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance
+
+# All Limits and reflection
+CRIreg4  <- plm(CRI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance 
+
+# Everybody? 
+CRIreg5 <- plm(CRI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
+```
+
+```{r (old) controlled panel modeling, eval=F}
+#Next: Panel model of corruption against unemployment and high school? 
+testmodel01 <- plm(CCI ~ rpcinc_annual_new + unemp + high_school + logNumpop + citi6006 + grelimp, data = AltBarber, index = c("st","year"), effect="twoways")
+
+testmodel02 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + fedrepcons + urbanization_2 + logpop + inspop, data = AltBarber, index = c("st","year"), effect="twoways")
+
+testmodel03 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + fedrepcons + urbanization_2 + logpop + inspop + ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = AltBarber, index = c("st","year"), effect="twoways")
+
+testmodel05 <- plm(CCI ~ jdiv + bindingonetermlimit + bindingtwotermlimit + rpcinc_annual_new + eousa + unemp + citi6006 + high_school + rgenrevpc + logNumpop + eopop + men_ineqincwag + grelimp + urbanization_2 + logpop + inspop, data = AltBarber, index = c("st","year"), effect="twoways")
+```
+
+```{r controlled panel modeling, eval=F}
+
+CCIcontrol01 <- plm(CCI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   index = c("st","year"), 
+                   effect="twoways")
+
+CCIcontrol02 <- plm(CCI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop # Log of population (millions)
+                   + ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy, 
+                   data = AltBarber, 
+                   index = c("st","year"), 
+                   effect="twoways")
+
+CRIcontrol01 <- plm(CRI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   index = c("st","year"), 
+                   effect="twoways")
+
+CRIcontrol02 <- plm(CRI ~ jdiv  # Divided government 
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop # Log of population (millions)
+                   + ind_limits_2010*ind_limits_dummy 
+                   + ind2pty_limits_2010*ind2pty_limits_dummy 
+                   + pac_limits_2010*pac_limits_dummy, 
+                   data = AltBarber, 
+                   index = c("st","year"), 
+                   effect="twoways")
+                 
+```
+
+```{r post-Lentz panel effects modeling 1, eval=F}
+# Include lagged dependent variables here. 
+# Erin's question: Are these "pooled"? 
+# Her effort to understand: Write out the formulas. 
+# Maybe helpful? https://onlinecourses.science.psu.edu/stat502/node/162/
+# Erin's suggestion https://www.princeton.edu/~otorres/Panel101R.pdf
+# On robust standard errors https://stats.stackexchange.com/questions/117052/replicating-statas-robust-option-in-r
+# And https://cran.r-project.org/web/packages/sandwich/vignettes/sandwich.pdf
+# And https://www.brodrigues.co/blog/2018-07-08-rob_stderr/, 
+# Pretty good explanation here https://www.methodsconsultants.com/tutorial/introduction-to-random-effects-models-including-hlm/
+# Go through this? https://github.com/tyleransom/EconometricsLabs/blob/master/tidyRcheatsheet.pdf
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways"))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="within", effect="twoways"))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="within"))
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), model="random")) #FAIL 
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model="pooling")
+summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model="within")
+
+#From Erin: 
+# •	Based on the results in Table 3, it appears that neither fixed effects or random effects were included in the panel estimation results. If that is correct, I’d argue including one of them could materially change the results. 
+# o	I’m not sure which would be better: state fixed effects would limit the interpretation of results to effects within states, as opposed to across states but fixed effects are not a good idea when the error terms of each state are correlated (use a Hausman to check). Random effects assume no omitted variables, which can be a strong assumption.  
+# o	This might be a useful resource: https://www.princeton.edu/~otorres/Panel101.pdf
+# o	Explain your treatment of standard errors (e.g., are you using robust se?).
+
+```
+old code -->
