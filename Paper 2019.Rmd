@@ -576,11 +576,33 @@ stargazer(cri.limits.pooled,
           )
 ```
 
-
-```{r output to table?}
-
+```{r CCI output to table}
+stargazer(cci.base.pooled, 
+          cci.limits.pooled, 
+          cci.limits.fixed,
+          cci.limits.fixed.time, 
+          type="text",
+          title = "Are the presence or amounts of campaign limits correlated with corruption convictions?",
+          out="collateral/CCI.htm",
+          dep.var.labels = "Corruption Convictions Index",
+          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way"))
+          )
 ```
 
+```{r CRI output to table}
+stargazer(cri.base.pooled, 
+          cri.limits.pooled, 
+          cri.limits.fixed,
+          cri.limits.fixed.time, 
+          type="text",
+          title = "Are the presence or amounts of campaign limits correlated with the Corruption Reflections Index?",
+          out="collateral/CRI.htm",
+          dep.var.labels = "Corruption Convictions Index",
+          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way"))
+          )
+```
 ### Model II: Difference-in-Difference Model
 <!--Add specification, formulas?-->
 Even if the panel models above fail to capture correlation between state level campaign finance laws and corruption arrests, it could be the case that changes in campaign finance laws, rather than relative campaign finance limits, are correlated with decreases in corruption. A difference-in-difference regression can help identify this by comparing the state-years in which campaign finance laws changed to state-years where they remained constant. If tighter campaign finance laws are correlated with lower corruption levels, then a change in one year should lead to lower corruption convictions in the years following. 
@@ -655,101 +677,6 @@ The third set of models (Table 3) incorporates a number of control variables in 
 ### Modeling changes in campaign limits and corruption arrests 
 
 The final set of models (Table 4) displays results from multiple difference-in-difference models designed to isolate the effect of changes in campaign finance laws on corruption arrests. None of the models find correlation between campaign finance limits and either corruption convictions or corruption reflections. 
-
-\newpage 
-```{r stargzer CCI html}
-stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
-  type="text", 
-  title = "Are campaign limits and corruption convictions correlated?",
-  out="collateral/CCI.htm",
-  dep.var.labels = c("Corruption Convictions Index"),
-  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
-```
-
-```{r stargazer CCI latex, results="asis", eval=TRUE}
-stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
-  type="latex", 
-  title = "Are campaign limits and corruption convictions correlated?",
-  dep.var.labels = c("Corruption Convictions Index"),
-  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
-  font.size = "small",
-  header=FALSE,
-  column.sep.width = "-15pt",
-  digits = 2, digits.extra = 2)
-```
-
-```{r stargazer CRI html, eval=F}
-stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
-  type="text", 
-  title = "Are campaign limits and corruption reflections correlated?",
-  out="collateral/CRI.htm",
-  dep.var.labels = c("Corruption Reflections Index"),
-  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
-```
-
-```{r stargazer CRI latex, results="asis", eval=TRUE}
-stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
-          type="latex",
-  title = "Are campaign limits and corruption reflections correlated?",
-  dep.var.labels = c("Corruption Reflections Index"),
-  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
-  font.size = "small",
-  header=FALSE,
-  column.sep.width = "-15pt",
-  digits = 2, digits.extra = 2)
-```
-
-```{r stargazer controlled panel, eval=F}
-stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
-  type="text", 
-  title = "Are campaign limits and correlated with corruption convictions or reflections?",
-  out="collateral/CCICRIcontrol.htm",
-  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
-  covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)")
-  )
-```
-
-```{r 3 stargazer controlled panel latex, results="asis", eval=TRUE}
-stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
-  title = "Are campaign limits and correlated with corruption convictions or reflections?",
-  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
-  covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income (thousands)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (thousands)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
-  font.size = "small",
-  header=FALSE,
-  column.sep.width = "-15pt",
-  no.space = T,
-  digits = 2, digits.extra = 2)
-```
-
-```{r stargazer DiD}
-stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
-  type="text", 
-  title = "Do changes in limits lead to lower levels of corruption?",
-  out="collateral/DiD.htm",
-  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
-  covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
-                     "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
-                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"))
-
-```
-
-\newpage
-\blandscape
-```{r stargazer DiD latex, results="asis", eval=TRUE}
-stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
-  title = "Do changes in limits lead to lower levels of corruption?",
-  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
-  covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
-                     "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
-                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"),
-  font.size = "small", 
-  header = FALSE,
-  column.sep.width = "-15pt",
-  digits = 2, digits.extra = 2,
-  no.space = TRUE)
-
-```
-\elandscape
 
 ##Discussion
 At least one group of models allows for a straightforward interpretation. The panel models examining the relationship between state-level campaign finance laws and the Corruption Convictions Index fail to show any correlation between state level campaign finance laws and levels of corruption as measured by corruptions convictions, even controlling for variation in enforcement across the states. 
@@ -995,4 +922,98 @@ summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model=
 # o	Explain your treatment of standard errors (e.g., are you using robust se?).
 
 ```
+
+```{r stargzer CCI html}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
+  type="text", 
+  title = "Are campaign limits and corruption convictions correlated?",
+  out="collateral/CCI.htm",
+  dep.var.labels = c("Corruption Convictions Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
+```
+
+```{r stargazer CCI latex, results="asis", eval=TRUE}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
+  type="latex", 
+  title = "Are campaign limits and corruption convictions correlated?",
+  dep.var.labels = c("Corruption Convictions Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  font.size = "small",
+  header=FALSE,
+  column.sep.width = "-15pt",
+  digits = 2, digits.extra = 2)
+```
+
+```{r stargazer CRI html, eval=F}
+stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+  type="text", 
+  title = "Are campaign limits and corruption reflections correlated?",
+  out="collateral/CRI.htm",
+  dep.var.labels = c("Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
+```
+
+```{r stargazer CRI latex, results="asis", eval=TRUE}
+stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+          type="latex",
+  title = "Are campaign limits and corruption reflections correlated?",
+  dep.var.labels = c("Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  font.size = "small",
+  header=FALSE,
+  column.sep.width = "-15pt",
+  digits = 2, digits.extra = 2)
+```
+
+```{r stargazer controlled panel, eval=F}
+stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
+  type="text", 
+  title = "Are campaign limits and correlated with corruption convictions or reflections?",
+  out="collateral/CCICRIcontrol.htm",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)")
+  )
+```
+
+```{r 3 stargazer controlled panel latex, results="asis", eval=TRUE}
+stargazer(CCIcontrol01,CCIcontrol02,CRIcontrol01,CRIcontrol02,
+  title = "Are campaign limits and correlated with corruption convictions or reflections?",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Divided government", "Binding one-term limit"," Binding two-term limit","Real per capita income (thousands)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (thousands)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)","Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  font.size = "small",
+  header=FALSE,
+  column.sep.width = "-15pt",
+  no.space = T,
+  digits = 2, digits.extra = 2)
+```
+
+```{r stargazer DiD}
+stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
+  type="text", 
+  title = "Do changes in limits lead to lower levels of corruption?",
+  out="collateral/DiD.htm",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
+                     "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
+                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"))
+
+```
+
+\blandscape
+```{r stargazer DiD latex, results="asis", eval=TRUE}
+stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
+  title = "Do changes in limits lead to lower levels of corruption?",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
+                     "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
+                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"),
+  font.size = "small", 
+  header = FALSE,
+  column.sep.width = "-15pt",
+  digits = 2, digits.extra = 2,
+  no.space = TRUE)
+
+```
+\elandscape
+
 old code -->
