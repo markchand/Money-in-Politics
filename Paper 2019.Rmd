@@ -1,6 +1,6 @@
 ---
 title: | 
-  | UNDER CONSTRUCTION 
+  | [UNDER CONSTRUCTION]
   | Campaign Contribution Limits and Corruption: 
   | Evidence from the 50 states
 author: "Mark Hand"
@@ -96,7 +96,6 @@ AltBarber <- inner_join(BarberICC, AltLassen)
 In 1976, the Supreme Court ruled in _Buckley v. Valeo_ that political campaign contributions are the equivalent of free speech, and therefore protected by the first amendment. At the same time, the Court laid out one mechanism and two permissible reasons for limiting those contributions. First, it argued that more money spent does not amount of “more” speech, allowing for the use of campaign contribution dollar amount limits. Donating one dollar or $5,000 to a political campaign amounts to a speech act, the Court held, and so it is permissible to impose limits on the amount of contributions as long as contributions are not prevented. Second, having laid out this mechanism by which money in politics might be limited, the court laid out only two constitutionally permissible reasons for limiting contributions: To prevent corruption or the appearance thereof. As Kang (2012) argues, the holdings in _Buckley v. Valeo_ provided “the basic framework of contribution limits and disclosure requirements” for the following four decades. Since _Buckley v. Valeo_, Congress has passed only one campaign finance law, the Bipartisan Campaign Reform Act of 2002. Better know as McCain-Feingold, the bill took aim at unlimited “soft money” contributions to political parties and expanded the Federal Election Commission’s disclosure requirements to what it called “electioneering communications,” political ads not paid for by campaigns themselves. 
 
 Apart from McCain-Feingold, for forty years all changes in the landscape of campaign finance have come from the Supreme Court and appellate courts, which have worked to balance questions of corruption with those of free speech. In 1981, the Court struck down contribution limits related to ballot measures (_Citizens against Rent Control v. City of Berkeley-). Just before the passage of McCain-Feingold, the courts considered state-level limits, allowing low limits in Missouri (_Nixon v. Shrink Missouri_, 2000), though it would later finding Vermont's to be low enough that they had a meaningful impact on political speech (_Randall v. Sorrell_, 2006). 
-
 <!--Those rulings have often been driven by the question of corporations’ participation in the political process. In 1978, the Court extended free speech protections to corporations (First National Bank of Boston v. Bellotti). 
 
 Then in 1990, it upheld a ban on corporations using treasury funds to pay for issue advertisements, arguing for an extended definition of corruption, "the corrosive and distorting effects of immense aggregations of wealth that are accumulated with the help of the corporate form and that have little or no correlation to the public's support for the corporation's political ideas" (Austin v. Michigan State Chamber of Commerce, later overturned). 
@@ -129,10 +128,10 @@ In this paper, I build upon the growing body of state-level political science re
 
 Barber’s data set is a panel of contribution limits from 1990-2012 for the lower house of every state legislature. Barber compiled this data set from the FEC, Westlaw, and the Nation Council of State Legislatures. Each dollar amount is inflation indexed to 2010 dollar amounts, and bi-annualized. There are three different types of limits in the Barber database: Individual contribution limits, individual-to-party limits, and PAC limits. Barber utilized individual and PAC contributions in his analysis of polarization, leaving out individual-to-party limits given that party contributions typically make up less than 10% of total political fundraising; I include it this analysis to determine whether parties, rather than PACs or individuals, might be the locus of corruption as measured by our other two data sets (Barber 2016). 
 
-<!--Add in summary statistics here. 
-Plot of something over time? Histograms? Correlations? 
--->
-```{r Barber summary, eval=TRUE}
+*Add Barber Summary*
+*Test Barber correlations?* Maybe not necessary 
+<!--Add in summary statistics here. Plot of something over time? Histograms? Correlations? -->
+```{r Barber summary}
 descr(Barber)
 # Barber histograms 
 ind_limits_2010.plot <- ggplot(Barber, aes(ind_limits_2010)) + geom_density() + theme_minimal()
@@ -148,9 +147,9 @@ pairs(Barber[3:7])
 
 The second data set comes from the Department of Justice’s “Report to Congress on the Activities and Operations of the Public Integrity Section” by way of the Institute for Corruption Studies.[^Koch]  Since 1976, the FBI has tracked political corruption at the state level, and the Corruption Convictions Index (CCI) used here includes the number of corruption convictions in a year normalized by the population in each state. This measure of corruption is widely used in academic research, though not without criticism. 
 
+*Add CCI summary* 
 <!--clean these up--> 
-
-```{r CCI summary, eval=TRUE}
+```{r CCI summary}
 descr(convictions)
 # Barber histograms 
 convictions.plot <- ggplot(convictions, aes(CCI)) + geom_density() + theme_minimal()
@@ -160,8 +159,8 @@ convictions.plot
 The third data set is the Institute for Corruption Studies’ Corruption Reflections Index (CRI), put together by Dincer and Johnston for their 2016 article on state-level corruption, and which they create in response to the limitations of the Corruption Convictions. The Corruption Reflections Index represents the fraction of Associated Press stories about politics in a particular state that mention political corruption (Dincer and Johnston 2016). 
 
 <!--clean these up--> 
-
-```{r CRI summary, eval=TRUE}
+*Add CRI summary* 
+```{r CRI summary}
 descr(reflections)
 # Barber histograms 
 reflections.plot <- ggplot(reflections, aes(CRI)) + geom_density() + theme_minimal()
@@ -169,8 +168,8 @@ reflections.plot
 ```
 
 <!--Test whether these are correlated?--> 
-
-```{r CCI and CRI correlations }
+*Test CRI and CCI correlations?* 
+```{r CCI and CRI correlations}
 ggplot(BarberICC, aes(CCI,CRI)) + geom_point() + theme_minimal() + geom_abline()
 ```
 
@@ -192,17 +191,70 @@ I include three predictor variables in both sets of models: Individual contribut
 
 <!--Edit specifications--> 
 ####Corruption Convictions Index versus campaign contribution limits in a given state-year: 
+*Edit these* 
 
 $Convictions = \alpha + \beta_{indiv.dummy} + \beta_{indiv.dummy}*\beta_{indiv.limit} + \beta_{pac.dummy} + \beta_{pac.dummy}*\beta_{pac.limit} + \beta_{indiv-to-party.dummy} + \beta_{indiv-to-party.dummy}*\beta_{indiv-to-party.limit} + \epsilon$
 
 ####Corruption Reflections Index versus campaign contributions in a given state-year: 
-
+*Edit these* 
 $Reflections = \alpha + \beta_{indiv.dummy} + \beta_{indiv.dummy}*\beta_{indiv.limit} + \beta_{pac.dummy} + \beta_{pac.dummy}*\beta_{pac.limit} + \beta_{indiv-to-party.dummy} + \beta_{indiv-to-party.dummy}*\beta_{indiv-to-party.limit} + \epsilon$
 
-As demonstrated below, this model fails to uncover any initial correlation between changes in campaign finance law and CCI or CRI scores. This may be due to the confounding effect of absent variables. In order to test that, I build a model of political corruption using control variables previously demonstrated to be correlated with corruption arrests, resulting in a data set covering 1990-2004, the period of overlap among the data sets listed above. These include controlling for the size and education levels of the population, the ideology of a population, income levels and inequality, education levels, the number and relative income of government employees, and urbanization. Building a model of corruption that includes variables previously demonstrated to be correlated with corruption levels, then adding in campaign finance data, can better identify the association of campaign finance laws with corruption levels.
+As demonstrated below, this model fails to uncover any initial correlation between changes in campaign finance law and CCI or CRI scores. This may be due to the confounding effect of absent variables. In order to test that, I build a model of political corruption using control variables previously demonstrated to be correlated with corruption arrests, resulting in a data set covering 1990-2004, the period of overlap among the data sets listed above. These include controlling for the size and education levels of the population, the ideology of a population, income levels and inequality, education levels, the number and relative income of government employees, and urbanization. Building a model of corruption that includes variables previously demonstrated to be correlated with corruption levels, then adding in campaign finance data, I can better identify the association of campaign finance laws with corruption levels.
 
-```{r modeling of CCI base model effects, eval=F}
-# Base model with no fixed or random effects 
+```{r modeling of initial correlations (with fixed effects), eval=T}
+## CCI 
+# Individual limits and corruption
+CCIreg1  <- plm(CCI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No signifigance
+
+# Individual-to-party limits and corruption
+CCIreg2  <- plm(CCI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance
+
+# PAC Limits and corruption
+CCIreg3  <- plm(CCI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance
+
+# Total Limits and corruption
+CCIreg4  <- plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# One star. Hmm...
+
+# Everybody? 
+CCIreg5 <- plm(CCI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
+
+## CRI
+CRIreg1  <- plm(CRI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No signifigance 
+
+# Individual-to-party limits and reflection
+CRIreg2  <- plm(CRI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# One star. Hmm... 
+
+# PAC Limits and reflection
+CRIreg3  <- plm(CRI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance
+
+# All Limits and reflection
+CRIreg4  <- plm(CRI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
+# No Signifigance 
+
+# Everybody? 
+CRIreg5 <- plm(CRI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
+```
+
+```{r output of initial correlations (with fixed effects), include=F}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+  type="text", 
+  title = "Appendix A: Are campaign limits correlated with corruption convictions or reflections?",
+  out="collateral/AppendixA.htm",
+  dep.var.labels = c("Corruption Convictions Index","Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  add.lines = list(c("Effects","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way"))
+  )
+```
+
+```{r modeling of CCI base model effects, eval=T}
+# Base model with no Two-Way or random effects 
  cci.base.pooled <- plm(CCI ~ jdiv  # Divided government 
                    + bindingonetermlimit # Binding one-term limit 
                    + bindingtwotermlimit # Binding two-term limit 
@@ -274,12 +326,14 @@ cci.base.fixed.time <- plm(CCI ~ jdiv  # Divided government
 # Base model with random effects doesn't work: 
 # Error in solve.default(crossprod(ZBmu)) : 
   # system is computationally singular: reciprocal condition number = 1.96767e-18
-
-# Hausman for base model 
-phtest(cci.base.pooled, cci.base.fixed, cci.base.random, cci.base.fixed.time)
 ```
 
-```{r output of CCI base model effects, eval=F}
+```{r Hausman for CCI base model, eval=F}
+phtest(cci.base.pooled, cci.base.fixed, cci.base.random, cci.base.fixed.time)
+
+```
+
+```{r output of CCI base model effects}
 stargazer(cci.base.pooled, 
           cci.base.fixed, 
           cci.base.random, 
@@ -289,7 +343,7 @@ stargazer(cci.base.pooled,
           )
 ```
 
-```{r modeling of CRI base model effects, eval=F}
+```{r modeling of CRI base model effects, eval=T}
 # Base model with no fixed or random effects 
  cri.base.pooled <- plm(CRI ~ jdiv  # Divided government 
                    + bindingonetermlimit # Binding one-term limit 
@@ -358,12 +412,13 @@ cri.base.fixed.time <- plm(CRI ~ jdiv  # Divided government
                    data = AltBarber, 
                    model="within", 
                    effect = "twoways")
+```
 
-# Hausman for base model 
+```{r Hausman for CRI base model, eval=F}
 phtest(cri.base.pooled, cri.base.fixed, cri.base.random, cri.base.fixed.time)
 ```
 
-```{r output of CRI base model effects, eval=F}
+```{r output of CRI base model effects}
 stargazer(cri.base.pooled, 
           cri.base.fixed, 
           cri.base.random, 
@@ -373,7 +428,7 @@ stargazer(cri.base.pooled,
           )
 ```
 
-```{r modeling of CCI with campaign finance variables, eval=F}
+```{r modeling of CCI with campaign finance variables, eval=T}
 # Base model with no fixed or random effects 
  cci.limits.pooled <- plm(CCI 
                    ~ ind_limits_2010*ind_limits_dummy 
@@ -459,11 +514,13 @@ cci.limits.fixed.time <- plm(CCI
                    model="within", 
                    effect = "twoways")
 
-# Hausman for base model 
+```
+
+```{r Hausman test for CCI with campaign finance variables, eval=F}
 phtest(cci.limits.pooled, cci.limits.fixed, cci.limits.random, cci.limits.fixed.time)
 ```
 
-```{r output of CCI with campaign finance variables, eval=F}
+```{r output of CCI with campaign finance variables}
 stargazer(cci.limits.pooled, 
           cci.limits.fixed, 
           cci.limits.fixed.time, 
@@ -472,7 +529,7 @@ stargazer(cci.limits.pooled,
           )
 ```
 
-```{r modeling of CRI with campaign finance variables, eval=F}
+```{r modeling of CRI with campaign finance variables, eval=T}
 # Base model with no fixed or random effects 
 cri.limits.pooled <- plm(CRI 
                    ~ ind_limits_2010*ind_limits_dummy 
@@ -557,16 +614,13 @@ cri.limits.fixed.time <- plm(CRI
                    data = AltBarber, 
                    model="within", 
                    effect = "twoways")
+```
 
-# Base model with random effects doesn't work: 
-# Error in solve.default(crossprod(ZBmu)) : 
-  # system is computationally singular: reciprocal condition number = 1.96767e-18
-
-# Hausman for base model 
+```{r Hausman test for CRI with campaign finance variables, eval=F}
 phtest(cri.limits.pooled, cri.limits.fixed, cri.limits.random, cri.limits.fixed.time)
 ```
 
-```{r output of CRI with campaign finance variables, eval=F}
+```{r output of CRI with campaign finance variables}
 stargazer(cri.limits.pooled, 
           cri.limits.fixed, 
           cri.limits.random,
@@ -582,7 +636,7 @@ stargazer(cci.base.pooled,
           cci.limits.fixed,
           cci.limits.fixed.time, 
           type="text",
-          title = "Are the presence or amounts of campaign limits correlated with corruption convictions?",
+          title = "Table 1: Are the presence or amounts of campaign limits correlated with corruption convictions?",
           out="collateral/CCI.htm",
           dep.var.labels = "Corruption Convictions Index",
           covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
@@ -596,7 +650,7 @@ stargazer(cri.base.pooled,
           cri.limits.fixed,
           cri.limits.fixed.time, 
           type="text",
-          title = "Are the presence or amounts of campaign limits correlated with the Corruption Reflections Index?",
+          title = "Table 2: Are the presence or amounts of campaign limits correlated with the Corruption Reflections Index?",
           out="collateral/CRI.htm",
           dep.var.labels = "Corruption Convictions Index",
           covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
@@ -667,26 +721,27 @@ CRIDID03 <- lm(CRI ~ ind2pty_dummy_f*ind2pty_d, data = DiDsmall)
 
 ##Results 
 ### Modeling campaign limits and corruption arrests 
-The results of the initial panel regressions reveal no correlation between state-level campaign contribution limits and corruption, with one exception: There is a statistically significant relationship between the presence of individual-to-party limits and the Corruption Reflections Index. 
+*(rework based on which tables you'll show)*
+The results of the panel regressions reveal no correlation between state-level campaign contribution limits and corruption, with one exception: There is a statistically significant relationship between the presence of individual-to-party limits and the Corruption Reflections Index. 
 
-The first set of models (Table 1) measures the association of various campaign contribution limits with the Corruption Convictions Index. The sign of each coefficient is negative, indicating that the presence of limits is associated with lower corruption levels, but that where limits exist, higher (weaker) donation limits are associated with lower levels of corruption. None of those results are significant at the p<0.05 level, however, meaning that we cannot claim their effect is statistically distinguishable from zero. I interpret these results as showing no relationship between the presence or amount of state-level contribution limits and levels of corruption as measured by the Corruption Convictions Index. 
+The first set of models (Table X) measures the association of various campaign contribution limits with the Corruption Convictions Index. The sign of each coefficient is negative, indicating that the presence of limits is associated with lower corruption levels, but that where limits exist, higher (weaker) donation limits are associated with lower levels of corruption. None of those results are significant at the p<0.05 level, however, meaning that we cannot claim their effect is statistically distinguishable from zero. I interpret these results as showing no relationship between the presence or amount of state-level contribution limits and levels of corruption as measured by the Corruption Convictions Index. 
 
-The second set of models (Table 2) also fails to find a relationship between state-level campaign contribution limits and media mentions of corruption as measured by the Corruption Reflections Index, with one exception: The presence of limits on what an individual can give to a party is associated with a 0.10 point decline in the Corruption Reflection Index. The Corruption Reflections Index operates on a scale of zero to one (with a few outlying exceptions), indicating that the presence of individual-to-party limits is associated with a 10% decrease in the index. 
+The second set of models (Table X) also fails to find a relationship between state-level campaign contribution limits and media mentions of corruption as measured by the Corruption Reflections Index, with one exception: The presence of limits on what an individual can give to a party is associated with a 0.10 point decline in the Corruption Reflection Index. The Corruption Reflections Index operates on a scale of zero to one (with a few outlying exceptions), indicating that the presence of individual-to-party limits is associated with a 10% decrease in the index. 
 
-The third set of models (Table 3) incorporates a number of control variables in order to isolate the effect of campaign finance laws on corruption arrest levels. As in the models above, the only correlation significant at the p<0.05 level is the presence of limits on what an individual can give to a party. As above, the presence of limits in what an individual can give to a party is associated with a decline in the Corruption Reflections Index. 
+The third set of models (Table X) incorporates a number of control variables in order to isolate the effect of campaign finance laws on corruption arrest levels. As in the models above, the only correlation significant at the p<0.05 level is the presence of limits on what an individual can give to a party. As above, the presence of limits in what an individual can give to a party is associated with a decline in the Corruption Reflections Index. 
 
 ### Modeling changes in campaign limits and corruption arrests 
 
-The final set of models (Table 4) displays results from multiple difference-in-difference models designed to isolate the effect of changes in campaign finance laws on corruption arrests. None of the models find correlation between campaign finance limits and either corruption convictions or corruption reflections. 
+The final set of models (Table X) displays results from multiple difference-in-difference models designed to isolate the effect of changes in campaign finance laws on corruption arrests. None of the models find correlation between campaign finance limits and either corruption convictions or corruption reflections. 
 
-##Discussion
+## Discussion
 At least one group of models allows for a straightforward interpretation. The panel models examining the relationship between state-level campaign finance laws and the Corruption Convictions Index fail to show any correlation between state level campaign finance laws and levels of corruption as measured by corruptions convictions, even controlling for variation in enforcement across the states. 
 
 The results for the models examining the relationship between campaign finance limits and the Corruption Reflections Index are less clear. The pair of stars that suggest the presence of individual-to-party limits is associated with a decrease in the Corruption Reflections Index. There is a less than 1% probability that the results are due to chance. How could this be, given that (a) the presence of individual-to-party limits has no association with a change the Corruption Convictions Index; (b) none of the other contribution limits are associated with a change in the Corruption Reflections Index; and (c) there is no correlation between the dollar amount of the individual-to-party limit and the Corruption Reflections Index? In practice, this would mean that states with individual-to-party limits also see lower levels of Associated Press reporting on corruption, but that once limits of any kind are imposed, the level of limit does not matter. It would also mean that only individual-to-party limits matter, not individual-to-candidate or PAC-to-candidate limits. Lastly, it would imply that the presence of such limits has an effect on reporting about corruption, but not on corruption convictions. 
 
 There is limited theoretical explanation for this outcome. It could be that AP reporters are somehow more likely to report on conviction allegations against political parties than against individual candidates or PACs, even where those allegations don’t result in greater levels of convictions, and only in states where the absence of contribution limits allows for a clean, “no limits on contributions” narrative. It is more likely, however, that these results call into question the robustness of Dincer and Johnston’s Corruption Reflections Index. As mentioned above, further research could carry forward their text-mining method into a greater number and variety of outlets, in order to find a measure of corruption reporting more tightly correlated with other measures. 
 
-##Conclusion
+## Conclusion
 There at least two distinct and opposing ways to explain these results, viewpoints that will come into direct and public conflict if the Court chooses to hear a first amendment challenge to campaign contribution limits. 
 
 The first interpretation is that campaign finance and quid pro quo corruption are simply not related. How could this be? One explanation is that the measures of corruption used here fail to capture most corruption, which is never prosecuted. This explanation, however, would rest on the assumption that corruption is unequally captured across states over time. A second explanation is that corruption occurs regardless of campaign finance laws: Politicians likely to engage in corrupt behavior will do so outside of the campaign finance regime, where their transactions would be most visible. 
@@ -702,10 +757,34 @@ The second, pro-reform interpretation of these results would highlight further i
 If Jim Bopp and other conservative legal scholars have their way, the Supreme Court will soon take a closer look at the logic laid out by their predecessors in 1976 in support of campaign contribution limits. Justice Thomas's comments in _McCutcheon v. FEC_ suggest that commitment to the Buckley v. Valeo structure is weakening, and not in the way that campaign finance reformers might hope. Despite effort, scholars have failed to provide compelling evidence of a link between campaign contribution limits and corruption as defined by the Court. The measures of corruption that academics have used to date have serious limitations. Yet if the Court decides the burden of proof is on those looking to restrict political spending on narrow corruption grounds, reform advocates worried about money in politics have a steep empirical hill to climb, and likely only a few short years to do it. 
 
 \newpage
-##Appendix A: Descriptions of Control Variables
+
+\newpage
+\blandscape
+
+## Appendix A: Initital modeling of independent and dependent variables
+
+*Clean up*
+
+```{r output of initial correlations, results="asis", eval=T}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,CRIreg1, CRIreg2, CRIreg3, CRIreg5,
+  title = "Appendix A: Are campaign limits correlated with corruption convictions or reflections?",
+  type="latex",
+  dep.var.labels = c("Corruption Convictions Index","Corruption Reflections Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
+  add.lines = list(c("Effects","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way","Two-Way")),
+  font.size = "small",
+  header = FALSE,
+  column.sep.width = "-5pt",
+  digits = 2, digits.extra = 0,
+  no.space = TRUE, 
+  omit.stat = "f"
+  )
+```
+\elandscape
+
+\newpage
+##Appendix B: Descriptions of Control Variables
 In their 2006 paper "Corruption in America," Glaeser and Saks make use of the following control variables, which we have included here: 
-
-
 
 \newpage
 ##References 
@@ -767,46 +846,6 @@ Welch, W. P. (1982). Campaign contributions and legislative voting: Milk money a
 Zall, B. (2017, October 24). Ninth Circuit Tees Up Latest Challenge to Citizens United and McCutcheon. Retrieved November 22, 2017, from https://publicpolicylegal.com/2017/10/24/ninth-circuit-tees-up-latest-challenge-to-citizens-united-and-mccutcheon/
 
 <!-- Old code
-```{r panel modeling}
-## CCI 
-# Individual limits and corruption
-CCIreg1  <- plm(CCI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No signifigance
-
-# Individual-to-party limits and corruption
-CCIreg2  <- plm(CCI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance
-
-# PAC Limits and corruption
-CCIreg3  <- plm(CCI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance
-
-# Total Limits and corruption
-CCIreg4  <- plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# One star. Hmm...
-
-# Everybody? 
-CCIreg5 <- plm(CCI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
-
-## CRI
-CRIreg1  <- plm(CRI ~ ind_limits_2010*ind_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No signifigance 
-
-# Individual-to-party limits and reflection
-CRIreg2  <- plm(CRI ~ ind2pty_limits_2010*ind2pty_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# One star. Hmm... 
-
-# PAC Limits and reflection
-CRIreg3  <- plm(CRI ~ pac_limits_2010*pac_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance
-
-# All Limits and reflection
-CRIreg4  <- plm(CRI ~ total_limits_2010*total_limits_dummy,data = BarberICC, index = c("st","year"), effect="twoways")
-# No Signifigance 
-
-# Everybody? 
-CRIreg5 <- plm(CRI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, index = c("st","year"), effect="twoways")
-```
 
 ```{r (old) controlled panel modeling}
 #Next: Panel model of corruption against unemployment and high school? 
@@ -924,15 +963,6 @@ summary(plm(CCI ~ total_limits_2010*total_limits_dummy,data = BarberICC), model=
 
 ```
 
-```{r stargzer CCI html}
-stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
-  type="text", 
-  title = "Are campaign limits and corruption convictions correlated?",
-  out="collateral/CCI.htm",
-  dep.var.labels = c("Corruption Convictions Index"),
-  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
-```
-
 ```{r stargazer CCI latex, results="asis"}
 stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   type="latex", 
@@ -945,7 +975,16 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
   digits = 2, digits.extra = 2)
 ```
 
-```{r stargazer CRI html, eval=F}
+```{r stargzer CCI html}
+stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,
+  type="text", 
+  title = "Are campaign limits and corruption convictions correlated?",
+  out="collateral/CCI.htm",
+  dep.var.labels = c("Corruption Convictions Index"),
+  covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"))
+```
+
+```{r stargazer CRI html}
 stargazer(CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   type="text", 
   title = "Are campaign limits and corruption reflections correlated?",
