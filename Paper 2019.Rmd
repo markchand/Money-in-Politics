@@ -151,9 +151,9 @@ The second data set comes from the Department of Justice’s “Report to Congre
 <!--clean these up--> 
 ```{r CCI summary}
 descr(convictions)
-# Barber histograms 
 convictions.plot <- ggplot(convictions, aes(CCI)) + geom_density() + theme_minimal()
 convictions.plot
+# FAIL convictions.time <- ggplot(convictions, aes(Year,CCI)) + stat_summary(fun.y = sum) + theme_minimal()
 ```
 
 The third data set is the Institute for Corruption Studies’ Corruption Reflections Index (CRI), put together by Dincer and Johnston for their 2016 article on state-level corruption, and which they create in response to the limitations of the Corruption Convictions. The Corruption Reflections Index represents the fraction of Associated Press stories about politics in a particular state that mention political corruption (Dincer and Johnston 2016). 
