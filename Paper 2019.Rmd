@@ -28,6 +28,7 @@ library(kableExtra) # For regression outputs
 library(broom) # Because Matt Worthington said so 
 library(knitr) # Because Matt Worthington said so 
 library(summarytools) # For summary statistics 
+library(psych) # Also for summary statistics
 ```
 
 ```{r data import, eval=T, message=F, warning=F}
@@ -125,52 +126,42 @@ A smaller number of scholars have begun connecting these bodies of work to exami
 
 ##Data and Design  
 In this paper, I build upon the growing body of state-level political science research to ask whether campaign contribution limits at the state level associated with lower levels of corruption. Given open debate about the proper measure of state-level corruption, I use two measures. The first, a Corruptions Convictions Index, is the traditional measure of state level corruption, built from Department of Justice convictions data. The second, the Corruptions Reflection Index, is a new measure put forward by Dincer and Johnston (2016). I combine these measures with a third data set from Michael Barber’s 2016 work on campaign contribution limits and political polarization; and a fourth data set from James Alt and David Dryer Lassen, to provide controls for the full model (Alt and Lassen 2012). 
-
 Barber’s data set is a panel of contribution limits from 1990-2012 for the lower house of every state legislature. Barber compiled this data set from the FEC, Westlaw, and the Nation Council of State Legislatures. Each dollar amount is inflation indexed to 2010 dollar amounts, and bi-annualized. There are three different types of limits in the Barber database: Individual contribution limits, individual-to-party limits, and PAC limits. Barber utilized individual and PAC contributions in his analysis of polarization, leaving out individual-to-party limits given that party contributions typically make up less than 10% of total political fundraising; I include it this analysis to determine whether parties, rather than PACs or individuals, might be the locus of corruption as measured by our other two data sets (Barber 2016). 
 
-*Add Barber Summary*
-*Test Barber correlations?* Maybe not necessary 
-<!--Add in summary statistics here. Plot of something over time? Histograms? Correlations? -->
-```{r Barber summary}
-descr(Barber)
-# Barber histograms 
-ind_limits_2010.plot <- ggplot(Barber, aes(ind_limits_2010)) + geom_density() + theme_minimal()
-ind_limits_2010.plot
-ind2pty_limits_2010.plot <- ggplot(Barber, aes(ind2pty_limits_2010)) + geom_density() + theme_minimal()
-ind_limits_2010.plot
-pac_limits_2010.plot <- ggplot(Barber, aes(pac_limits_2010)) + geom_density() + theme_minimal()
+#### Insert Barber Summary Statistics Here. 
+```{r Barber summary, eval=F}
+# This is a summary it, but includes all the 99999s and doesn't have skew in it. 
+stargazer(as.data.frame(subset(Barber[,3:6])), type="text", digits=0)
 
-# Correlation matrix? 
-pairs(Barber[3:7])
-# Doesn't make sense, because of use of 99,999s. 
+# This replaces all the 99999s. 
+BarberNAs <- Barber %>% dplyr::na_if(99999)
+
+# These are (highly skewed) histograms of the remaining values 
+ind_limits_2010.plot <- ggplot(BarberNAs, aes(ind_limits_2010)) + geom_density() + theme_minimal()
+ind2pty_limits_2010.plot <- ggplot(BarberNAs, aes(ind2pty_limits_2010)) + geom_density() + theme_minimal()
+pac_limits_2010.plot <- ggplot(BarberNAs, aes(pac_limits_2010)) + geom_density() + theme_minimal()
+
+# How about correlations? Unclear what this shows us. 
+pairs(BarberNAs[3:6])
+
+# This is a summary table for all the non-99999 values. 
+stargazer(as.data.frame(subset(BarberNAs[,3:6])), type="text", digits=0, title="Descriptive Statistics (n=1150 state-years)", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"))
+# How do I get this printed? 
+
+# An alternative, perhaps to combine if I can figure out how to print: 
+# psych::describe(subset(BarberNAs[,3:6]))
 ```
 
-The second data set comes from the Department of Justice’s “Report to Congress on the Activities and Operations of the Public Integrity Section” by way of the Institute for Corruption Studies.[^Koch]  Since 1976, the FBI has tracked political corruption at the state level, and the Corruption Convictions Index (CCI) used here includes the number of corruption convictions in a year normalized by the population in each state. This measure of corruption is widely used in academic research, though not without criticism. 
-
-*Add CCI summary* 
-<!--clean these up--> 
-```{r CCI summary}
-descr(convictions)
-convictions.plot <- ggplot(convictions, aes(CCI)) + geom_density() + theme_minimal()
-convictions.plot
-# FAIL convictions.time <- ggplot(convictions, aes(Year,CCI)) + stat_summary(fun.y = sum) + theme_minimal()
-```
+The second data set comes from the Department of Justice’s “Report to Congress on the Activities and Operations of the Public Integrity Section” by way of the Institute for Corruption Studies.[^Koch]  Since 1976, the FBI has tracked political corruption at the state level, and the Corruption Convictions Index (CCI) used here includes the number of corruption convictions in a year normalized by the population in each state. This measure of corruption is widely used in academic research, though not without criticism. Descriptive statistics for corruption convictions are included below. 
 
 The third data set is the Institute for Corruption Studies’ Corruption Reflections Index (CRI), put together by Dincer and Johnston for their 2016 article on state-level corruption, and which they create in response to the limitations of the Corruption Convictions. The Corruption Reflections Index represents the fraction of Associated Press stories about politics in a particular state that mention political corruption (Dincer and Johnston 2016). 
 
-<!--clean these up--> 
-*Add CRI summary* 
-```{r CRI summary}
-descr(reflections)
-# Barber histograms 
-reflections.plot <- ggplot(reflections, aes(CRI)) + geom_density() + theme_minimal()
-reflections.plot
-```
+#### Insert CRI and CCI Summary Statistics Here  
+```{r CRI summary, eval=F}
+stargazer(as.data.frame(subset(corruption[,c(3,6)])), type="text", digits=2, title="Descriptive Statistics of Corruption and Reflections", covariate.labels = c("Corruption Convictions Index (CCI)","Corruption Reflections Index (CRI)"))
 
-<!--Test whether these are correlated?--> 
-*Test CRI and CCI correlations?* 
-```{r CCI and CRI correlations}
-ggplot(BarberICC, aes(CCI,CRI)) + geom_point() + theme_minimal() + geom_abline()
+# Next: How to demonstrate skew? # Test whether these are correlated? 
+# ggplot(BarberICC, aes(CCI,CRI)) + geom_point() + theme_minimal() + geom_abline()
 ```
 
 The fourth data set provides controls for the panel model. In their 2012 work examining variation in prosecutorial resources, Alt and Lassen follow Glaeser and Saks (2006) in controlling for income and education levels, size of government, legislature control, and urbanization (see Appendix A). Alt and Lassen's data set runs from 1976-2004. When included in the second and third models, this limits the analysis to the years from 1990-2004. 
@@ -183,21 +174,17 @@ Most broadly, this analysis does not directly address the “appearance of corru
 
 [^Koch]: N.B. According to one of the researchers’ [curricula vitae](https://about.illinoisstate.edu/odincer/Documents/CVDincerApril2016.docx), the Institute for Corruption Studies is funded in part by a grant from the Charles Koch Research Foundation. Organizations funded by Charles and David Koch are also funders of legal groups driving legal battles mentioned in the introduction, according to a [report](https://www.publicintegrity.org/2017/11/15/21279/kochs-key-among-small-group-quietly-funding-legal-assault-campaign-finance) by the Center for Public Integrity. 
 
-##Methods
+## Methods
 ### Model I: Panel Regression
 Having constructed a full 1990-2012 panel data set from these three data sets, I then run a set of time series regressions testing the relationship between contribution limits and both dependent variables, the Corruption Convictions Index and the Corruption Reflections Index. 
 
-I include three predictor variables in both sets of models: Individual contribution limits, individual-to-party contribution limits, and PAC contribution limits. For each of these independent variables, I construct two variables to use in the model. The first is a dummy variable indicating whether there are contribution limits in that state in that year, coded as “0” if there are no limits and “1” if there are. The second is a continuous variable indicating the dollar amount of the limit in the state in that year. By interacting these two variables, I test two separate associations. The dummy variable tests whether there is a difference in the CCI and CRI in states with limits versus states without limits. The continuous variable tests whether higher or lower limits are associated with higher or lower CCI and CRI scores, within the group of states that have limits in a given year. After performing this transformation on all three independent variables, I test two initial sets of models: (1) Corruption Convictions Index versus campaign contribution limits in a given state-year, and (2) Corruption Reflections Index versus campaign contributions in a given state-year. 
+I include three predictor variables in both sets of models: Individual contribution limits, individual-to-party contribution limits, and PAC contribution limits. For each of these independent variables, I construct two variables to use in the model. The first is a dummy variable indicating whether there are contribution limits in that state in that year, coded as “0” if there are no limits and “1” if there are. The second is a continuous variable indicating the dollar amount of the limit in the state in that year. By interacting these two variables, I test two separate associations. The dummy variable tests whether there is a difference in the CCI and CRI in states with limits versus states without limits. The continuous variable tests whether higher or lower limits are associated with higher or lower CCI and CRI scores, within the group of states that have limits in a given year. After performing this transformation on all three independent variables, I test two initial sets of models: (1) Corruption Convictions Index versus campaign contribution limits in a given state-year, and (2) Corruption Reflections Index versus campaign contributions in a given state-year. The models are are as follows: 
 
-<!--Edit specifications--> 
-####Corruption Convictions Index versus campaign contribution limits in a given state-year: 
-*Edit these* 
+#### Corruption Convictions Index versus campaign contribution limits in a given state-year: 
+$Convictions = \alpha_{state} + \beta_{1}{indiv.dummy} + \beta_{2}{indiv.dummy}*{indiv.limit} + \beta_{3}{pac.dummy} + \beta_{4}{pac.dummy}*{pac.limit} + \beta_{5}{indiv-to-party.dummy} + \beta_{6}{indiv-to-party.dummy}*{indiv-to-party.limit} + Controls + \epsilon$
 
-$Convictions = \alpha + \beta_{indiv.dummy} + \beta_{indiv.dummy}*\beta_{indiv.limit} + \beta_{pac.dummy} + \beta_{pac.dummy}*\beta_{pac.limit} + \beta_{indiv-to-party.dummy} + \beta_{indiv-to-party.dummy}*\beta_{indiv-to-party.limit} + \epsilon$
-
-####Corruption Reflections Index versus campaign contributions in a given state-year: 
-*Edit these* 
-$Reflections = \alpha + \beta_{indiv.dummy} + \beta_{indiv.dummy}*\beta_{indiv.limit} + \beta_{pac.dummy} + \beta_{pac.dummy}*\beta_{pac.limit} + \beta_{indiv-to-party.dummy} + \beta_{indiv-to-party.dummy}*\beta_{indiv-to-party.limit} + \epsilon$
+#### Corruption Reflections Index versus campaign contributions in a given state-year: 
+$Reflections = \alpha_{state} + \beta_{1}{indiv.dummy} + \beta_{2}{indiv.dummy}*{indiv.limit} + \beta_{3}{pac.dummy} + \beta_{4}{pac.dummy}*{pac.limit} + \beta_{5}{indiv-to-party.dummy} + \beta_{6}{indiv-to-party.dummy}*{indiv-to-party.limit} + Controls + \epsilon$
 
 As demonstrated below, this model fails to uncover any initial correlation between changes in campaign finance law and CCI or CRI scores. This may be due to the confounding effect of absent variables. In order to test that, I build a model of political corruption using control variables previously demonstrated to be correlated with corruption arrests, resulting in a data set covering 1990-2004, the period of overlap among the data sets listed above. These include controlling for the size and education levels of the population, the ideology of a population, income levels and inequality, education levels, the number and relative income of government employees, and urbanization. Building a model of corruption that includes variables previously demonstrated to be correlated with corruption levels, then adding in campaign finance data, I can better identify the association of campaign finance laws with corruption levels.
 
@@ -764,7 +751,6 @@ If Jim Bopp and other conservative legal scholars have their way, the Supreme Co
 ## Appendix A: Initital modeling of independent and dependent variables
 
 *Clean up*
-
 ```{r output of initial correlations, results="asis", eval=T}
 stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,CRIreg1, CRIreg2, CRIreg3, CRIreg5,
   title = "Appendix A: Are campaign limits correlated with corruption convictions or reflections?",
@@ -783,8 +769,28 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,CRIreg1, CRIreg2, CRIreg3, CRIreg5,
 \elandscape
 
 \newpage
-##Appendix B: Descriptions of Control Variables
+##Appendix B: Descriptions and Descriptive Statistics of Control Variables
 In their 2006 paper "Corruption in America," Glaeser and Saks make use of the following control variables, which we have included here: 
+
+* Divided government
+* Binding one-term limit
+* Binding two-term limit
+* Real per capita income ($1000)
+* AUSAs per million population
+* Unemployment
+* Citizen ideology measure
+* Percent high school graduates
+* Real per capita gov revenues ($1000)
+* Inequality: Male wages
+* Relative government wages
+* Urbanization
+* Log of population (millions)
+
+#### Include Descriptive Statistics Here
+```{r Alt and Lassen summary, eval=F}
+stargazer(as.data.frame(subset(AltLassen[,c("jdiv","bindingonetermlimit","bindingtwotermlimit","rpcinc_annual_new","eopop","unemp","citi6006","high_school","rgenrevpc","men_ineqincwag","grelimp","urbanization_2","logpop")])), type="text", digits=2, title="Descriptive Statistics of Control Variables", covariate.labels = c("Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"))
+```
+
 
 \newpage
 ##References 
