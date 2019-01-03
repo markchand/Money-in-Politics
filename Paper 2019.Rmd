@@ -23,12 +23,14 @@ library(haven) # import .dta
 suppressMessages(library("tidyverse")) # everything 
 library(plm) # For linear panel regression
 library(stargazer) # For regression outputs #fail 
-library(texreg) # For regression outputs #fail 
-library(kableExtra) # For regression outputs 
-library(broom) # Because Matt Worthington said so 
 library(knitr) # Because Matt Worthington said so 
-library(summarytools) # For summary statistics 
-library(psych) # Also for summary statistics
+library (MASS) # For binomial regression 
+library(pglm) # For panel + binomial 
+# library(psych) # Also for summary statistics
+# library(texreg) # For regression outputs #fail 
+# library(kableExtra) # For regression outputs 
+# library(broom) # Because Matt Worthington said so 
+# library(summarytools) # For summary statistics 
 ```
 
 ```{r data import, eval=T, message=F, warning=F}
@@ -128,10 +130,9 @@ A smaller number of scholars have begun connecting these bodies of work to exami
 In this paper, I build upon the growing body of state-level political science research to ask whether campaign contribution limits at the state level associated with lower levels of corruption. Given open debate about the proper measure of state-level corruption, I use two measures. The first, a Corruptions Convictions Index, is the traditional measure of state level corruption, built from Department of Justice convictions data. The second, the Corruptions Reflection Index, is a new measure put forward by Dincer and Johnston (2016). I combine these measures with a third data set from Michael Barber’s 2016 work on campaign contribution limits and political polarization; and a fourth data set from James Alt and David Dryer Lassen, to provide controls for the full model (Alt and Lassen 2012). 
 Barber’s data set is a panel of contribution limits from 1990-2012 for the lower house of every state legislature. Barber compiled this data set from the FEC, Westlaw, and the Nation Council of State Legislatures. Each dollar amount is inflation indexed to 2010 dollar amounts, and bi-annualized. There are three different types of limits in the Barber database: Individual contribution limits, individual-to-party limits, and PAC limits. Barber utilized individual and PAC contributions in his analysis of polarization, leaving out individual-to-party limits given that party contributions typically make up less than 10% of total political fundraising; I include it this analysis to determine whether parties, rather than PACs or individuals, might be the locus of corruption as measured by our other two data sets (Barber 2016). 
 
-#### Insert Barber Summary Statistics Here. 
-```{r Barber summary, eval=F}
+```{r Barber summary, eval=T}
 # This is a summary it, but includes all the 99999s and doesn't have skew in it. 
-stargazer(as.data.frame(subset(Barber[,3:6])), type="text", digits=0)
+# stargazer(as.data.frame(subset(Barber[,3:6])), type="text", digits=0)
 
 # This replaces all the 99999s. 
 BarberNAs <- Barber %>% dplyr::na_if(99999)
@@ -142,23 +143,26 @@ ind2pty_limits_2010.plot <- ggplot(BarberNAs, aes(ind2pty_limits_2010)) + geom_d
 pac_limits_2010.plot <- ggplot(BarberNAs, aes(pac_limits_2010)) + geom_density() + theme_minimal()
 
 # How about correlations? Unclear what this shows us. 
-pairs(BarberNAs[3:6])
-
-# This is a summary table for all the non-99999 values. 
-stargazer(as.data.frame(subset(BarberNAs[,3:6])), type="text", digits=0, title="Descriptive Statistics (n=1150 state-years)", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"))
-# How do I get this printed? 
+# pairs(BarberNAs[3:6])
 
 # An alternative, perhaps to combine if I can figure out how to print: 
-# psych::describe(subset(BarberNAs[,3:6]))
+# psych::describe(subset(BarberNAs[,3:6])) 
+
+# This is a summary table for all the state-years where limits exist:  
+# stargazer(as.data.frame(subset(BarberNAs[,3:6])), type="text", digits=0, title="Descriptive Statistics (n=1150 state-years)", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"))
+```
+
+```{r Barber summary statistics fail, results="asis", eval=TRUE}
+# This is what fails to knit (see error below)
+stargazer(as.data.frame(subset(BarberNAs[,3:6])), digits=0, type="latex", title="Descriptive Statistics for State Level Campaign Finance Limits (n=1150 state-years)", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"), header=F)
 ```
 
 The second data set comes from the Department of Justice’s “Report to Congress on the Activities and Operations of the Public Integrity Section” by way of the Institute for Corruption Studies.[^Koch]  Since 1976, the FBI has tracked political corruption at the state level, and the Corruption Convictions Index (CCI) used here includes the number of corruption convictions in a year normalized by the population in each state. This measure of corruption is widely used in academic research, though not without criticism. Descriptive statistics for corruption convictions are included below. 
 
 The third data set is the Institute for Corruption Studies’ Corruption Reflections Index (CRI), put together by Dincer and Johnston for their 2016 article on state-level corruption, and which they create in response to the limitations of the Corruption Convictions. The Corruption Reflections Index represents the fraction of Associated Press stories about politics in a particular state that mention political corruption (Dincer and Johnston 2016). 
 
-#### Insert CRI and CCI Summary Statistics Here  
-```{r CRI summary, eval=F}
-stargazer(as.data.frame(subset(corruption[,c(3,6)])), type="text", digits=2, title="Descriptive Statistics of Corruption and Reflections", covariate.labels = c("Corruption Convictions Index (CCI)","Corruption Reflections Index (CRI)"))
+```{r CRI summary, results="asis", eval=T}
+stargazer(as.data.frame(subset(corruption[,c(3,6)])), type="latex", digits=2, title="Descriptive Statistics for Corruption and Reflections", covariate.labels = c("Corruption Convictions Index (CCI)","Corruption Reflections Index (CRI)"), header=F)
 
 # Next: How to demonstrate skew? # Test whether these are correlated? 
 # ggplot(BarberICC, aes(CCI,CRI)) + geom_point() + theme_minimal() + geom_abline()
@@ -242,7 +246,7 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,CRIreg1, CRIreg2, CRIreg3, CRIreg5,
 
 ```{r modeling of CCI base model effects, eval=T}
 # Base model with no Two-Way or random effects 
- cci.base.pooled <- plm(CCI ~ jdiv  # Divided government 
+cci.base.pooled <- plm(CCI ~ jdiv  # Divided government 
                    + bindingonetermlimit # Binding one-term limit 
                    + bindingtwotermlimit # Binding two-term limit 
                    + rpcinc_annual_new # Real per capita income ($1000)
@@ -603,7 +607,7 @@ cri.limits.fixed.time <- plm(CRI
                    effect = "twoways")
 ```
 
-```{r Hausman test for CRI with campaign finance variables, eval=F}
+```{r Hausman test for CRI with campaign finance variables}
 phtest(cri.limits.pooled, cri.limits.fixed, cri.limits.random, cri.limits.fixed.time)
 ```
 
@@ -617,32 +621,44 @@ stargazer(cri.limits.pooled,
           )
 ```
 
-```{r CCI output to table}
-stargazer(cci.base.pooled, 
-          cci.limits.pooled, 
-          cci.limits.fixed,
-          cci.limits.fixed.time, 
-          type="text",
-          title = "Table 1: Are the presence or amounts of campaign limits correlated with corruption convictions?",
-          out="collateral/CCI.htm",
-          dep.var.labels = "Corruption Convictions Index",
-          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
-          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way"))
-          )
-```
+```{r Empty, Binomial, and Poisson models}
+# First, trying to run the model above but with the pglm() package
+# pglm(formula, data, subset, na.action, effect = c("individual", "time", "twoways"), model = c("random", "pooling", "within", "between"), family, other = NULL, index = NULL, start = NULL, R = 20, ...)
 
-```{r CRI output to table}
-stargazer(cri.base.pooled, 
-          cri.limits.pooled, 
-          cri.limits.fixed,
-          cri.limits.fixed.time, 
-          type="text",
-          title = "Table 2: Are the presence or amounts of campaign limits correlated with the Corruption Reflections Index?",
-          out="collateral/CRI.htm",
-          dep.var.labels = "Corruption Convictions Index",
-          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
-          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way"))
-          ) 
+# Initial correlations of independent variables with CCI 
+pglm(CCI ~ ind_limits_2010*ind_limits_dummy + ind2pty_limits_2010*ind2pty_limits_dummy + pac_limits_2010*pac_limits_dummy, data = BarberICC, model = "within", index = c("st","year"), effect = "twoways", family = gaussian) 
+# Return code 100: Initial value out of range. May have something to do with the interaction terms, because when I strip those out, the model at least returns something. 
+
+# What about Cale's empty model? 
+cci.empty.pooling <- plm(CCI ~ st + year,
+                   data = AltBarber, 
+                   model="pooling")
+summary(cci.empty.pooling)
+
+cci.empty.within <- plm(CCI ~ st + year,
+                   data = AltBarber, 
+                   model="within")
+summary(cci.empty.within)
+
+# Verifying that I didn't screw up by not having st and year as variables in my preivous model 
+cci.base.fixed.time.redo <- plm(CCI ~ st + year 
+                   + jdiv  # Divided government
+                   + bindingonetermlimit # Binding one-term limit 
+                   + bindingtwotermlimit # Binding two-term limit 
+                   + rpcinc_annual_new # Real per capita income ($1000)
+                   + eopop # AUSAs per million population
+                   + unemp # Unemployment 
+                   + citi6006 # Citizen ideology measure 
+                   + high_school + # Percent high school graduates
+                   + rgenrevpc # Real per capita gov revenues ($1000)
+                   + men_ineqincwag # Inequality: Male wages
+                   + grelimp # Relative government wages
+                   + urbanization_2 # Urbanization 
+                   + logpop, # Log of population (millions)
+                   data = AltBarber, 
+                   model="within", 
+                   effect = "twoways")
+# stargazer(cci.base.fixed.time, cci.base.fixed.time.redo, type="text")
 ```
 
 ### Model II: Difference-in-Difference Model
@@ -708,7 +724,6 @@ CRIDID03 <- lm(CRI ~ ind2pty_dummy_f*ind2pty_d, data = DiDsmall)
 
 ##Results 
 ### Modeling campaign limits and corruption arrests 
-*(rework based on which tables you'll show)*
 The results of the panel regressions reveal no correlation between state-level campaign contribution limits and corruption, with one exception: There is a statistically significant relationship between the presence of individual-to-party limits and the Corruption Reflections Index. 
 
 The first set of models (Table X) measures the association of various campaign contribution limits with the Corruption Convictions Index. The sign of each coefficient is negative, indicating that the presence of limits is associated with lower corruption levels, but that where limits exist, higher (weaker) donation limits are associated with lower levels of corruption. None of those results are significant at the p<0.05 level, however, meaning that we cannot claim their effect is statistically distinguishable from zero. I interpret these results as showing no relationship between the presence or amount of state-level contribution limits and levels of corruption as measured by the Corruption Convictions Index. 
@@ -720,6 +735,61 @@ The third set of models (Table X) incorporates a number of control variables in 
 ### Modeling changes in campaign limits and corruption arrests 
 
 The final set of models (Table X) displays results from multiple difference-in-difference models designed to isolate the effect of changes in campaign finance laws on corruption arrests. None of the models find correlation between campaign finance limits and either corruption convictions or corruption reflections. 
+
+```{r CCI output to table}
+stargazer(cci.base.pooled, 
+          cci.limits.pooled, 
+          cci.limits.fixed,
+          cci.limits.fixed.time, 
+          type="text",
+          title = "Table 1: Are the presence or amounts of campaign limits correlated with corruption convictions?",
+          out="collateral/CCI.htm",
+          dep.var.labels = "Corruption Convictions Index",
+          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way"))
+          )
+```
+
+```{r CCI output to table latex, results="asis", eval=T}
+# Maaaaaybe figure out how to add back in those $ signs. 
+stargazer(cci.base.pooled, 
+          cci.limits.pooled, 
+          cci.limits.fixed,
+          cci.limits.fixed.time, 
+          type="latex",
+          title = "Are the presence or amounts of campaign limits correlated with corruption convictions?",
+          dep.var.labels = "Corruption Convictions Index",
+          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income (1000s)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (1000s)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+  add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way")),     
+  header=FALSE, 
+  font.size = "small",
+  # column.sep.width = "-5pt",
+  digits = 2, digits.extra = 0,
+  no.space = TRUE,
+  omit.stat = "f"
+  )
+
+```
+
+```{r CRI output to table latex, results="asis", eval=T}
+stargazer(cri.base.pooled, 
+          cri.limits.pooled, 
+          cri.limits.fixed,
+          cri.limits.fixed.time, 
+          type="latex",
+          title = "Are the presence or amounts of campaign limits correlated with the Corruption Reflections Index?",
+          dep.var.labels = "Corruption Convictions Index",
+          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income (1000s)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (1000s)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way")),
+  header=FALSE, 
+  font.size = "small",
+  # column.sep.width = "-5pt",
+  digits = 2, digits.extra = 0,
+  no.space = TRUE,
+  omit.stat = "f"
+  )
+```
+
 
 ## Discussion
 At least one group of models allows for a straightforward interpretation. The panel models examining the relationship between state-level campaign finance laws and the Corruption Convictions Index fail to show any correlation between state level campaign finance laws and levels of corruption as measured by corruptions convictions, even controlling for variation in enforcement across the states. 
@@ -749,11 +819,9 @@ If Jim Bopp and other conservative legal scholars have their way, the Supreme Co
 \blandscape
 
 ## Appendix A: Initital modeling of independent and dependent variables
-
-*Clean up*
 ```{r output of initial correlations, results="asis", eval=T}
 stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,CRIreg1, CRIreg2, CRIreg3, CRIreg5,
-  title = "Appendix A: Are campaign limits correlated with corruption convictions or reflections?",
+  title = "Are campaign limits correlated with corruption convictions or reflections?",
   type="latex",
   dep.var.labels = c("Corruption Convictions Index","Corruption Reflections Index"),
   covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)"),
@@ -786,11 +854,18 @@ In their 2006 paper "Corruption in America," Glaeser and Saks make use of the fo
 * Urbanization
 * Log of population (millions)
 
-#### Include Descriptive Statistics Here
-```{r Alt and Lassen summary, eval=F}
-stargazer(as.data.frame(subset(AltLassen[,c("jdiv","bindingonetermlimit","bindingtwotermlimit","rpcinc_annual_new","eopop","unemp","citi6006","high_school","rgenrevpc","men_ineqincwag","grelimp","urbanization_2","logpop")])), type="text", digits=2, title="Descriptive Statistics of Control Variables", covariate.labels = c("Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"))
+```{r Alt and Lassen summary, results="asis", eval=T}
+stargazer(as.data.frame(subset(AltLassen[,c("jdiv","bindingonetermlimit","bindingtwotermlimit","rpcinc_annual_new","eopop","unemp","citi6006","high_school","rgenrevpc","men_ineqincwag","grelimp","urbanization_2","logpop")])), 
+          type="latex", 
+          digits=2, 
+          title="Descriptive Statistics of Control Variables", 
+          covariate.labels = c("Divided government","Binding one-term limit","Binding two-term limit","Real per capita income (1000s)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (1000s)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+          header=FALSE,
+          font.size = "small",
+          column.sep.width = "-5pt",
+          # digits = 2, digits.extra = 0,
+          no.space = TRUE) 
 ```
-
 
 \newpage
 ##References 

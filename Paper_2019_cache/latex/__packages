@@ -19,3 +19,7 @@ knitr
 summarytools
 bindrcpp
 psych
+MASS
+miscTools
+maxLik
+pglm
