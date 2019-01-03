@@ -152,7 +152,7 @@ pac_limits_2010.plot <- ggplot(BarberNAs, aes(pac_limits_2010)) + geom_density()
 # stargazer(as.data.frame(subset(BarberNAs[,3:6])), type="text", digits=0, title="Descriptive Statistics (n=1150 state-years)", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"))
 ```
 
-```{r Barber summary statistics fail, results="asis", eval=TRUE}
+```{r Barber summary statistics latex, results="asis", eval=TRUE}
 # This is what fails to knit (see error below)
 stargazer(as.data.frame(subset(BarberNAs[,3:6])), digits=0, type="latex", title="Descriptive Statistics for State Level Campaign Finance Limits (n=1150 state-years)", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"), header=F)
 ```
@@ -161,14 +161,14 @@ The second data set comes from the Department of Justice’s “Report to Congre
 
 The third data set is the Institute for Corruption Studies’ Corruption Reflections Index (CRI), put together by Dincer and Johnston for their 2016 article on state-level corruption, and which they create in response to the limitations of the Corruption Convictions. The Corruption Reflections Index represents the fraction of Associated Press stories about politics in a particular state that mention political corruption (Dincer and Johnston 2016). 
 
-```{r CRI summary, results="asis", eval=T}
+```{r CRI summary latex, results="asis", eval=T}
 stargazer(as.data.frame(subset(corruption[,c(3,6)])), type="latex", digits=2, title="Descriptive Statistics for Corruption and Reflections", covariate.labels = c("Corruption Convictions Index (CCI)","Corruption Reflections Index (CRI)"), header=F)
 
 # Next: How to demonstrate skew? # Test whether these are correlated? 
 # ggplot(BarberICC, aes(CCI,CRI)) + geom_point() + theme_minimal() + geom_abline()
 ```
 
-The fourth data set provides controls for the panel model. In their 2012 work examining variation in prosecutorial resources, Alt and Lassen follow Glaeser and Saks (2006) in controlling for income and education levels, size of government, legislature control, and urbanization (see Appendix A). Alt and Lassen's data set runs from 1976-2004. When included in the second and third models, this limits the analysis to the years from 1990-2004. 
+The fourth data set provides controls for the panel model. In their 2012 work examining variation in prosecutorial resources, Alt and Lassen follow Glaeser and Saks (2006) in controlling for income and education levels, size of government, legislature control, and urbanization (see Appendix X). Alt and Lassen's data set runs from 1976-2004. When included in the second and third models, this limits the analysis to the years from 1990-2004. 
 
 This analysis has its limitations, beginning with the data sets themselves. Barber’s state campaign contributions data lacks information about upper houses of state legislatures, which are included in both the CCI and CRI. The Corruption Convictions Index suffers from a number of issues, as outlined by Dincer and Johnston in their introduction to the Corruption Reflections Index. They argue that the CCI includes only federal data; that the resources available to prosecutors varies from state to state; that US Attorneys are political appointees; and that the measure records only convictions, which is at best a reflection of underlying corruption. 
 
@@ -621,7 +621,7 @@ stargazer(cri.limits.pooled,
           )
 ```
 
-```{r Empty, Binomial, and Poisson models}
+```{r Empty, Binomial, and Poisson models FAIL}
 # First, trying to run the model above but with the pglm() package
 # pglm(formula, data, subset, na.action, effect = c("individual", "time", "twoways"), model = c("random", "pooling", "within", "between"), family, other = NULL, index = NULL, start = NULL, R = 20, ...)
 
@@ -736,20 +736,6 @@ The third set of models (Table X) incorporates a number of control variables in 
 
 The final set of models (Table X) displays results from multiple difference-in-difference models designed to isolate the effect of changes in campaign finance laws on corruption arrests. None of the models find correlation between campaign finance limits and either corruption convictions or corruption reflections. 
 
-```{r CCI output to table}
-stargazer(cci.base.pooled, 
-          cci.limits.pooled, 
-          cci.limits.fixed,
-          cci.limits.fixed.time, 
-          type="text",
-          title = "Table 1: Are the presence or amounts of campaign limits correlated with corruption convictions?",
-          out="collateral/CCI.htm",
-          dep.var.labels = "Corruption Convictions Index",
-          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income ($1000)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues ($1000)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
-          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way"))
-          )
-```
-
 ```{r CCI output to table latex, results="asis", eval=T}
 # Maaaaaybe figure out how to add back in those $ signs. 
 stargazer(cci.base.pooled, 
@@ -790,7 +776,6 @@ stargazer(cri.base.pooled,
   )
 ```
 
-
 ## Discussion
 At least one group of models allows for a straightforward interpretation. The panel models examining the relationship between state-level campaign finance laws and the Corruption Convictions Index fail to show any correlation between state level campaign finance laws and levels of corruption as measured by corruptions convictions, even controlling for variation in enforcement across the states. 
 
@@ -814,8 +799,6 @@ The second, pro-reform interpretation of these results would highlight further i
 If Jim Bopp and other conservative legal scholars have their way, the Supreme Court will soon take a closer look at the logic laid out by their predecessors in 1976 in support of campaign contribution limits. Justice Thomas's comments in _McCutcheon v. FEC_ suggest that commitment to the Buckley v. Valeo structure is weakening, and not in the way that campaign finance reformers might hope. Despite effort, scholars have failed to provide compelling evidence of a link between campaign contribution limits and corruption as defined by the Court. The measures of corruption that academics have used to date have serious limitations. Yet if the Court decides the burden of proof is on those looking to restrict political spending on narrow corruption grounds, reform advocates worried about money in politics have a steep empirical hill to climb, and likely only a few short years to do it. 
 
 \newpage
-
-\newpage
 \blandscape
 
 ## Appendix A: Initital modeling of independent and dependent variables
@@ -837,7 +820,7 @@ stargazer(CCIreg1, CCIreg2, CCIreg3, CCIreg5,CRIreg1, CRIreg2, CRIreg3, CRIreg5,
 \elandscape
 
 \newpage
-##Appendix B: Descriptions and Descriptive Statistics of Control Variables
+##Appendix B: Descriptions and Descriptive Statistics of Control Variables 
 In their 2006 paper "Corruption in America," Glaeser and Saks make use of the following control variables, which we have included here: 
 
 * Divided government
