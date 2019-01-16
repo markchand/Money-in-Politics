@@ -6,6 +6,7 @@
 /collateral/*
 !/collateral/CCI.htm
 !/collateral/CRI.htm
+!/collateral/DiD.htm
 /data/Replication
 /data/ 
 /data/Replication/AltLassenJLEO.dta
@@ -13,3 +14,4 @@
 /Lentz comments for Hand (1).docx
 /Paper_2019_cache
 /Paper_2019_files
+.DS_Store

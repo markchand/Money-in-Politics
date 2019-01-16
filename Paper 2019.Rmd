@@ -1,6 +1,6 @@
 ---
 title: | 
-  | Campaign Contribution Limits and Corruption: 
+  | Campaign Contribution Limits and Corruption 
   | Evidence from the 50 states
 author: "Mark Hand"
 date: "01/06/2018"
@@ -15,7 +15,7 @@ header-includes:
 
 Since the 1970s, the U.S. Supreme Court has maintained that nearly all limits on political spending violate the first amendment’s protection of free speech. In its 1976 _Buckley v. Valeo_ decision, the Court laid out only two admissible justifications for limiting campaign donations: To prevent corruption or the appearance of corruption. But do campaign finance limits actually prevent corruption or its appearance? As current challenges to contribution limits wind their way through federal courts, the answer to this question will inform the Supreme Court’s decision to uphold or strike down remaining limits on political campaign contributions. Using state-level data from 1990-2012 on contribution limits, corruption arrests, and media mentions of corruption, this paper employs linear panel regression and first differences analyses to test whether campaign contribution limits are associated with lower levels of corruption convictions or media mentions of corruption. These methods find no relationship between the presence or level of campaign finance laws and quid pro quo corruption.[^SPSA] 
 
-[^SPSA]: Working paper presented at the Annual Meeting of the Southern Political Science Association, January 2019.
+[^SPSA]: Working paper presented at the Annual Meeting of the Southern Political Science Association, January 2019. Analysis available on [GitHub](https://github.com/markchand/Money-in-Politics).
 
 ```{r setup, include=FALSE}
 # This is all necessary setup stuff, including packages and for Markdown
@@ -27,6 +27,7 @@ library(stargazer) # For regression outputs #fail
 library(knitr) # Because Matt Worthington said so 
 library (MASS) # For binomial regression 
 library(pglm) # For panel + binomial 
+library(webshot) # For screenshots 
 # library(psych) # Also for summary statistics
 # library(texreg) # For regression outputs #fail 
 # library(kableExtra) # For regression outputs 
@@ -98,15 +99,17 @@ AltBarber <- inner_join(BarberICC, AltLassen)
 \newpage 
 
 ##Introduction
-In 1976, the Supreme Court ruled in _Buckley v. Valeo_ that political campaign contributions are the equivalent of free speech, and therefore protected by the first amendment. At the same time, the Court laid out one mechanism and two permissible reasons for limiting those contributions. First, it argued that more money spent does not amount of “more” speech, allowing for the use of campaign contribution dollar amount limits. Donating one dollar or $5,000 to a political campaign amounts to a speech act, the Court held, and so it is permissible to impose limits on the amount of contributions as long as contributions are not prevented. Second, having laid out this mechanism by which money in politics might be limited, the court laid out only two constitutionally permissible reasons for limiting contributions: To prevent corruption or the appearance thereof. As Kang (2012) argues, the holdings in _Buckley v. Valeo_ provided “the basic framework of contribution limits and disclosure requirements” for the following four decades. Since _Buckley v. Valeo_, Congress has passed only one campaign finance law, the Bipartisan Campaign Reform Act of 2002. Better know as McCain-Feingold, the bill took aim at unlimited “soft money” contributions to political parties and expanded the Federal Election Commission’s disclosure requirements to what it called “electioneering communications,” political ads not paid for by campaigns themselves. 
+In 1976, the Supreme Court ruled in _Buckley v. Valeo_ that political campaign expenditures are the equivalent of free speech, and therefore protected by the first amendment. At the same time, the Court laid out one mechanism and two permissible reasons for limiting campaign contributions that enable those expenditures. First, it argued that more money contributed does not amount to “more” speech, allowing for the use of campaign contribution dollar amount limits. Donating one dollar or $5,000 to a political campaign amounts to a speech act, the Court held, and so it is permissible to impose limits on the amount of contributions as long as contributions are not prevented. Second, having laid out this mechanism by which money in politics might be limited, the court laid out only two constitutionally permissible reasons for limiting contributions: To prevent corruption or the appearance thereof. As Kang (2012) argues, the holdings in _Buckley v. Valeo_ provided “the basic framework of contribution limits and disclosure requirements” for the following four decades. Since _Buckley v. Valeo_, Congress has passed only one campaign finance law, the Bipartisan Campaign Reform Act of 2002. Better know as McCain-Feingold, the bill took aim at unlimited “soft money” contributions to political parties and expanded the Federal Election Commission’s disclosure requirements to what it called “electioneering communications,” political ads not paid for by campaigns themselves. 
 
 Apart from McCain-Feingold, for forty years all changes in the landscape of campaign finance have come from the Supreme Court and appellate courts, which have worked to balance questions of corruption with those of free speech. In 1981, the Court struck down contribution limits related to ballot measures (_Citizens against Rent Control v. City of Berkeley-). Just before the passage of McCain-Feingold, the courts considered state-level limits, allowing low limits in Missouri (_Nixon v. Shrink Missouri_, 2000), though it would later finding Vermont's to be low enough that they had a meaningful impact on political speech (_Randall v. Sorrell_, 2006). 
+
 <!--Those rulings have often been driven by the question of corporations’ participation in the political process. In 1978, the Court extended free speech protections to corporations (First National Bank of Boston v. Bellotti). 
 
 Then in 1990, it upheld a ban on corporations using treasury funds to pay for issue advertisements, arguing for an extended definition of corruption, "the corrosive and distorting effects of immense aggregations of wealth that are accumulated with the help of the corporate form and that have little or no correlation to the public's support for the corporation's political ideas" (Austin v. Michigan State Chamber of Commerce, later overturned). 
 
 In 1986, it  and struck down efforts to restrict their expenditures to FEC-registered Political Action Committees (FEC v. Massachusetts Right to Life). 
 -->
+
 The passage of the McCain-Feingold in 2002 inspired a wave of challenges to campaign contributions and expenditures, driven mostly by conservative and religious political groups. In 2007, the Court examined the McCain-Feingold ban on airing issue advertisements close to election. Banning such ads, the Court argued, would have a chilling effect on free speech, and it struck down the ban (_FEC v. Wisconsin Right to Life_). Then, in 2010, the Court issued what has become one of its most well-known rulings: In _Citizens United v. FEC_ (2010), it struck down limits on independent expenditures by outside groups, including corporations and unions. One critical aspect of _Citizens United_ is the establishment of the principle that, according to Justice Anthony Kennedy, “independent expenditures do not lead to, or create the appearance of, quid pro quo corruption.” The Court’s emphasis on quid pro quo corruption as the only justification for contribution limits extended the following year, as it struck down an Arizona effort to level the political playing field with matching state campaign funds (_Arizona Free Enterprise Club v. Bennett_, 2011). 
 
 Since 2011, the network of conservative legal groups behind Citizens United has continued to take aim at contribution limits as an unnecessary restriction of political speech, with a focus on individual contribution limits. The 1971 Federal Election Campaign Act placed a limit on the amount an individual could give to one campaign, in addition to two-year limits on the total amount an individual could give to political campaigns. In _McCutcheon v. FEC_ (2014) James Bopp, one of the attorneys behind the Citizens United challenge, convinced the Court of the unconstitutionality of total individual limits. Another case, _Holmes v. FEC_ (2017), targeted the distribution of individual campaign contribution across primary and general elections. In yet another, _Lair v. Motl_ (2017), Bopp once again took aim at individual contribution limits, arguing that the state of Montana had not shown compelling evidence that campaign contribution limits decreased the risk of corruption. 
@@ -159,7 +162,8 @@ pac_limits_2010.plot <- ggplot(BarberNAs, aes(pac_limits_2010)) + geom_density()
 
 ```{r Barber summary statistics latex, results="asis", eval=TRUE}
 # This is what fails to knit (see error below)
-stargazer(as.data.frame(subset(BarberNAs[,3:6])), digits=0, type="latex", title="Descriptive Statistics for State Level Campaign Finance Limits (n=1150 state-years)", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"), header=F)
+stargazer(as.data.frame(subset(BarberNAs[,3:6])), digits=0, type="latex", title="Descriptive Statistics for State Level Campaign Finance Limits", covariate.labels = c("Individual Limits","Individual-to-Party Limits","Party Limits", "PAC Limits"), header=F, 
+          notes = "Notes: 'N' equals number of state-years (out of n=1150) in which that type of limit is present") 
 ```
 
 The second data set comes from the Department of Justice’s “Report to Congress on the Activities and Operations of the Public Integrity Section” by way of the Institute for Corruption Studies.[^Koch]  Since 1976, the FBI has tracked political corruption at the state level, and the Corruption Convictions Index (CCI) used here includes the number of corruption convictions in a year normalized by the population in each state. This measure of corruption is widely used in academic research, though not without criticism. Descriptive statistics for corruption convictions are included below. 
@@ -173,7 +177,7 @@ stargazer(as.data.frame(subset(corruption[,c(3,6)])), type="latex", digits=2, ti
 # ggplot(BarberICC, aes(CCI,CRI)) + geom_point() + theme_minimal() + geom_abline()
 ```
 
-The fourth data set provides controls for the panel model. In their 2012 work examining variation in prosecutorial resources, Alt and Lassen follow Glaeser and Saks (2006) in controlling for income and education levels, size of government, legislature control, and urbanization (see Appendix X). Alt and Lassen's data set runs from 1976-2004. When included in the second and third models, this limits the analysis to the years from 1990-2004. 
+The fourth data set provides controls for the panel model. In their 2012 work examining variation in prosecutorial resources, Alt and Lassen follow Glaeser and Saks (2006) in controlling for income and education levels, size of government, legislature control, and urbanization (see Appendix X). Alt and Lassen's data set runs from 1976-2004. When included in the second and third models, this limits the analysis to the years from 1990-2004 and n=720. 
 
 This analysis has its limitations, beginning with the data sets themselves. Barber’s state campaign contributions data lacks information about upper houses of state legislatures, which are included in both the CCI and CRI. The Corruption Convictions Index suffers from a number of issues, as outlined by Dincer and Johnston in their introduction to the Corruption Reflections Index. They argue that the CCI includes only federal data; that the resources available to prosecutors varies from state to state; that US Attorneys are political appointees; and that the measure records only convictions, which is at best a reflection of underlying corruption. 
 
@@ -747,6 +751,28 @@ stargazer(cci.base.pooled,
           cci.limits.fixed,
           cci.limits.fixed.time, 
           type="latex",
+          title = "Panel Model of Contribution Limits and Corruption Convictions",
+          dep.var.labels = "Corruption Convictions Index",
+          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income (1000s)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (1000s)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+  add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way")),     
+  header=FALSE, 
+  font.size = "small",
+  # column.sep.width = "-5pt",
+  digits = 2, digits.extra = 0,
+  no.space = TRUE,
+  omit.stat = "f"
+  )
+
+```
+
+```{r CCI output to png, eval=F}
+# Maaaaaybe figure out how to add back in those $ signs. 
+stargazer(cci.base.pooled, 
+          cci.limits.pooled, 
+          cci.limits.fixed,
+          cci.limits.fixed.time, 
+          type="html",
+          out="collateral/CCI.htm",
           title = "Panel Model of Campaign Finance Limits and Corruption Convictions",
           dep.var.labels = "Corruption Convictions Index",
           covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income (1000s)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (1000s)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
@@ -767,8 +793,28 @@ stargazer(cri.base.pooled,
           cri.limits.fixed,
           cri.limits.fixed.time, 
           type="latex",
+          title = "Panel Model of Contribution Limits and Corruption Reflections",
+          dep.var.labels = "Corruption Reflections Index",
+          covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income (1000s)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (1000s)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
+          add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way")),
+  header=FALSE, 
+  font.size = "small",
+  # column.sep.width = "-5pt", 
+  digits = 2, digits.extra = 0, 
+  no.space = TRUE,
+  omit.stat = "f" 
+  ) 
+```
+
+```{r CRI output to html, eval=F}
+stargazer(cri.base.pooled, 
+          cri.limits.pooled, 
+          cri.limits.fixed,
+          cri.limits.fixed.time, 
+          type="html",
+          out = "collateral/CRI.htm",
           title = "Panel Model of Campaign Finance Limits and Corruption Reflections",
-          dep.var.labels = "Corruption Convictions Index",
+          dep.var.labels = "Corruption Reflections Index",
           covariate.labels=c("Individual limit amounts", "Individual limits (dummy)","Individual-to-party limit amount","Individual-to-party limits (dummy)","PAC limit amounts","PAC limits (dummy)","Divided government","Binding one-term limit","Binding two-term limit","Real per capita income (1000s)","AUSAs per million population","Unemployment","Citizen ideology measure","Percent high school graduates","Real per capita gov revenues (1000s)","Inequality: Male wages","Relative government wages","Urbanization","Log of population (millions)"),
           add.lines = list(c("Effects","Pooled","Pooled","Fixed","Two-Way")),
   header=FALSE, 
@@ -784,7 +830,7 @@ stargazer(cri.base.pooled,
 ```{r DiD to table latex, results="asis", eval=T}
 stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
   type="latex", 
-  title = "First Differences Model: Do Changes in Limits Lead to Lower Levels of Corruption?",
+  title = "First Differences Model of Changes in Contribution Limits Versus Convictions and Reflections",
   dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
   covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
                      "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
@@ -797,6 +843,29 @@ stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
   omit.stat = "f"
   )
 ```
+
+```{r DiD to htm, eval=F}
+stargazer(CCIDID01, CCIDID02, CCIDID03, CRIDID01, CRIDID02, CRIDID03,
+  type="html", 
+  title = "First Differences Model: Do Changes in Limits Lead to Lower Levels of Corruption?",
+  out = "collateral/DiD.htm",
+  dep.var.labels = c("Corruption Convictions Index", "Corruption Reflections Index"),
+  covariate.labels=c("Individual limits removed","Individual limits imposed","Individual limit amount","Individual limits removed*amount","Individual limits imposed*amount",
+                     "PAC limits removed","PAC limits imposed","PAC limit amount","PAC limits removed*amount","PAC limits imposed*amount",
+                     "Individual-to-party limits removed","Individual-to-party limits imposed","Individual-to-party limit amount","Individual-to-party limits removed*amount","Individual-to-party limits imposed*amount"),
+  header=FALSE, 
+  font.size = "small",
+  # column.sep.width = "-5pt",
+  digits = 2, digits.extra = 0,
+  no.space = TRUE,
+  omit.stat = "f"
+  )
+```
+
+```{r webshots, eval=F}
+webshot("collateral/CCI.htm", "collateral/CCI.png")
+```
+
 \elandscape
 
 
@@ -826,7 +895,6 @@ If Jim Bopp and other conservative legal scholars have their way, the Supreme Co
 
 \newpage
 \blandscape
-
 
 ## Appendix X: Initital modeling of independent and dependent variables
 ```{r output of initial correlations, results="asis", eval=T}
