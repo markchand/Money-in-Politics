@@ -2,7 +2,7 @@
 title: | 
   | Campaign Contribution Limits and Corruption 
   | Evidence from the 50 states
-author: "Mark Hand"
+author: "Mark C. Hand"
 date: "01/06/2018"
 output: pdf_document
 header-includes:
@@ -139,7 +139,7 @@ In this paper, I build upon the growing body of state-level political science re
 Barber’s data set is a panel of contribution limits from 1990-2012 for the lower house of every state legislature. Barber compiled this data set from the FEC, Westlaw, and the Nation Council of State Legislatures. Each dollar amount is inflation indexed to 2010 dollar amounts, and bi-annualized. There are three different types of limits in the Barber database: Individual contribution limits, individual-to-party limits, and PAC limits. Barber utilized individual and PAC contributions in his analysis of polarization, leaving out individual-to-party limits given that party contributions typically make up less than 10% of total political fundraising; I include it this analysis to determine whether parties, rather than PACs or individuals, might be the locus of corruption as measured by our other two data sets (Barber 2016). 
 
 ```{r Barber summary, eval=T}
-# This is a summary it, but includes all the 99999s and doesn't have skew in it. 
+# This is a summary, but includes all the 99999s and doesn't have skew in it. 
 # stargazer(as.data.frame(subset(Barber[,3:6])), type="text", digits=0)
 
 # This replaces all the 99999s. 
@@ -672,7 +672,6 @@ cci.base.fixed.time.redo <- plm(CCI ~ st + year
                    effect = "twoways")
 # stargazer(cci.base.fixed.time, cci.base.fixed.time.redo, type="text")
 ```
-
 
 ### Model II: First Differences Model
 Even if the panel modeling above fails to capture correlation between state level campaign finance laws and corruption convictions, it could be the case that changes in campaign finance laws, rather than relative campaign finance limits, are correlated with decreases in corruption. In addition to the panel model above, I ran a first differences regression compare the state-years in which campaign finance laws changed to state-years where they remained constant. If tighter campaign finance laws are correlated with lower corruption levels, then a change in one year should be associated with lower CCI (corruption convictions) and CRI (reflections) in the years following. 

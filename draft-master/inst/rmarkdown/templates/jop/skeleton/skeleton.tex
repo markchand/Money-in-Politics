@@ -1,0 +1,95 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+
+\documentclass{jopsubmission}
+
+%% Math support
+\usepackage{amssymb} % Note: loads amsfonts
+\usepackage{amsmath}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp} % provide euro and other symbols
+
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+
+\usepackage{xcolor}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Your Title},
+          hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\urlstyle{same} % disable monospaced font for URLs
+
+
+
+
+%% For tables
+\usepackage{booktabs}
+
+%% For figures
+\usepackage{graphicx}
+\usepackage{grffile}
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+% We don't want a date in there
+\date{\vspace{-5ex}}
+
+    \title{Your Title}
+
+
+        
+% We need to remove section numbering
+\setcounter{secnumdepth}{-\maxdimen}
+
+\begin{document}
+
+    \maketitle
+            \begin{abstract}
+        Your abstract should go here. It should not exceed 150 words.
+        \end{abstract}
+    
+
+Your introduction should go at the very beginning. It should not have a
+section heading. Note that your initial submission should be anonymized.
+This is, in part (I cannot stop you from referencing your identity in
+the text), enforced by the YAML option ``anonymized'', which is true by
+default. If you set it to false, your name (as provided in the
+``author'' option) will be displayed via
+\texttt{\textbackslash{}maketitle}.
+
+Short article submissions must be 10 pages or less, including tables,
+figures, footnotes, and references, but excluding the title page,
+abstract page, and online appendix. Research articles must be 35 pages
+or less (same counting).
+
+\section{Section headings should be
+short}\label{section-headings-should-be-short}
+
+Section headings should not take up more than a single line of text.
+There should be no section heading for the introduction. Do not use
+headings immediately after one another without text in between. You
+generally should not use headings at the sub-sub-heading level or below.
+Do not refer to sections by number, as sections are not numbered.
+
+
+\end{document}
+
